@@ -1,0 +1,36 @@
+---
+title: "rat"
+author: "Hanrui Li"
+date: "2024-11-20"
+output: github_document
+---
+
+```{r}
+library(tidyverse)
+library(dplyr)
+
+rat = read.csv("data/rat_2020_2024.csv")
+
+nrow(rat)
+
+rat |>
+  group_by(month, result) |>
+  summarize(n = n()) |>
+  ggplot(aes(x = month, y = n)) + geom_point() +
+  facet_wrap(~result)
+```
+
+```{r}
+
+food = read.csv("data/food_scrap_drop_off.csv") |>
+  janitor::clean_names()
+
+zhvi_df = 
+  read.csv("zhvi_df_2020_2024.csv") |>
+  filter(state_name == "NY")
+
+zori_df = 
+  read.csv("zori_df_2020_2024.csv") |>
+  filter(state_name == "NY")
+```
+
