@@ -1,0 +1,133 @@
+---
+title: "regression_models"
+author: "Yujing FU"
+date: "2024-11-30"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(tidyr)
+library(rvest)
+library(janitor)
+```
+
+
+```{r}
+# data import 
+rat_df = read.csv("data/rat_2020_2024.csv")
+food_scrap_df = 
+  read.csv("data/food_scrap_drop_off.csv")
+zhvi_df = read.csv("data/ny_zhvi_df_2020_2024.csv")
+zori_df = read.csv("data/ny_zori_df_2020_2024.csv")
+
+head(rat_df)
+head(food_scrap_df)
+head(zhvi_df)
+head(rat_df)
+```
+
+```{r}
+# clean rat data
+rat_tidydf = rat_df |> 
+  mutate(inspection_date = substring(inspection_date, 1, 10)) |> 
+  mutate(date = as.Date(inspection_date, format = "%m/%d/%Y")) |> 
+  mutate(year = as.numeric(format(date, "%Y"))) |> 
+  mutate(month = as.numeric(format(date, "%m"))) |> 
+  mutate(day = as.numeric(format(date, "%d"))) |> 
+  select(inspection_type, result, date, year, month, day, street_name, zip_code, borough,latitude, longitude, location)
+```
+
+```{r}
+# clean zhvi and zori data
+zhvi_tidydf =
+  zhvi_df |> 
+  janitor::clean_names() |> 
+  mutate(region_name=as.numeric(region_name)) |> # Convert the data type to numeric
+  rename(zip_code = region_name, county = county_name) |> # Rename 'region_name' to 'zip_code'
+  mutate(county = gsub(" County", "", county)) |> 
+  pivot_longer(
+    cols = starts_with("x20"), 
+    names_to = "date", 
+    values_to = "house_price") |>  
+  mutate(date = as.Date(gsub("^x", "", date), format = "%Y_%m_%d")) |> # Remove 'x' from date and convert to Date format
+  mutate(year = as.numeric(format(date, "%Y"))) |> # Extract the year from the date
+  mutate(month = as.numeric(format(date, "%m"))) |> # Extract the month from the date
+  select(zip_code, county, date, year, month, house_price) |> # Select relevant columns
+  drop_na() # Remove rows with missing values for data quality
+
+# Clean and transform ZORI (rental price) dataset
+zori_tidydf = 
+  zori_df |> 
+  janitor::clean_names() |> # Standardize column names to clearer version
+  rename(zip_code = region_name, county = county_name) |> # Rename 'region_name' to 'zip_code'
+  mutate(county = gsub(" County", "", county)) |> 
+  pivot_longer(
+    cols = starts_with("x20"), 
+    names_to = "date", 
+    values_to = "rental_price") |> 
+  mutate(date = as.Date(gsub("^x", "", date), format = "%Y_%m_%d")) |> # Remove 'x' from date and convert to Date format
+  mutate(year = as.numeric(format(date, "%Y"))) |> 
+  mutate(month = as.numeric(format(date, "%m"))) |>
+  select(zip_code, county, date, year, month, rental_price) |> # Select necessary columns
+  drop_na() # Remove rows with missing values
+```
+
+```{r}
+# zip code df
+url = "https://p8105.com/data/zip_codes.html"
+zip_code_html = read_html(url)
+
+zip_code_df =
+  zip_code_html |> 
+  html_table() |> 
+  as.data.frame() |> 
+  janitor::clean_names() |> 
+  mutate(borough = case_when(
+    county == "Bronx" ~ "Bronx",
+    county == "Kings" ~ "Brooklyn",
+    county == "New York" ~ "Manhattan",
+    county == "Queens" ~ "Queens",
+    county == "Richmond" ~ "Staten Island",
+    TRUE ~ "Other"
+  )) |> 
+  select(zip_code, county, neighborhood, borough) |> 
+  drop_na()
+```
+
+```{r}
+# merge the zori & zhvi with zip code based on both the `zip_code` and `county`
+zori_merged = left_join(zori_tidydf, zip_code_df, by = c("zip_code", "county")) |> 
+  select(-date)
+zhvi_merged = left_join(zhvi_tidydf, zip_code_df, by = c("zip_code", "county")) |> 
+  select(-date)
+```
+
+
+```{r}
+# merge the zillow information
+zillow_merged = merge(zori_merged, zhvi_merged, by = c("zip_code", "county", "borough", "neighborhood", "year", "month")) |> 
+  drop_na()
+```
+
+```{r}
+# define the binary variable of rodent activity
+rodent_reg =
+  rat_tidydf |> 
+  mutate(rodent_bi = case_when(
+    result == "Rat Activity" ~ 1,
+    TRUE ~ 0
+  )) 
+head(rodent_reg)
+```
+
+
+```{r}
+rodent_reg_merged = 
+  left_join(zillow_merged, rodent_reg, by = c("zip_code", "borough", "year", "month"))
+head(rodent_reg_merged)
+```
+
