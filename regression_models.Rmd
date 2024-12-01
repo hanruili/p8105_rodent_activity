@@ -3,7 +3,7 @@ title: "regression_models"
 author: "Yujing FU"
 date: "2024-11-30"
 output: github_document
----
+
 
 ```{r}
 library(tidyverse)
@@ -131,6 +131,7 @@ rodent_reg_merged =
 head(rodent_reg_merged)
 ```
 
+<<<<<<< HEAD
 # Data Analysis
 
 describe 0 and 1
