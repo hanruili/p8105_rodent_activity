@@ -1,0 +1,303 @@
+---
+title: "regression_models"
+author: "Yujing FU"
+date: "2024-11-30"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(tidyr)
+library(rvest)
+library(janitor)
+```
+
+
+```{r}
+# data import 
+rat_df = read.csv("data/rat_2020_2024.csv")
+food_scrap_df = 
+  read.csv("data/food_scrap_drop_off.csv")
+zhvi_df = read.csv("data/ny_zhvi_df_2020_2024.csv")
+zori_df = read.csv("data/ny_zori_df_2020_2024.csv")
+
+head(rat_df)
+head(food_scrap_df)
+head(zhvi_df)
+head(rat_df)
+```
+
+```{r}
+# clean rat data
+rat_tidydf = rat_df |> 
+  mutate(inspection_date = substring(inspection_date, 1, 10)) |> 
+  mutate(date = as.Date(inspection_date, format = "%m/%d/%Y")) |> 
+  mutate(year = as.numeric(format(date, "%Y"))) |> 
+  mutate(month = as.numeric(format(date, "%m"))) |> 
+  mutate(day = as.numeric(format(date, "%d"))) |> 
+  select(inspection_type, result, date, year, month, day, street_name, zip_code, borough,latitude, longitude, location)
+```
+
+```{r}
+# clean zhvi and zori data
+zhvi_tidydf =
+  zhvi_df |> 
+  janitor::clean_names() |> 
+  mutate(region_name=as.numeric(region_name)) |> # Convert the data type to numeric
+  rename(zip_code = region_name, county = county_name) |> # Rename 'region_name' to 'zip_code'
+  mutate(county = gsub(" County", "", county)) |> 
+  pivot_longer(
+    cols = starts_with("x20"), 
+    names_to = "date", 
+    values_to = "house_price") |>  
+  mutate(date = as.Date(gsub("^x", "", date), format = "%Y_%m_%d")) |> # Remove 'x' from date and convert to Date format
+  mutate(year = as.numeric(format(date, "%Y"))) |> # Extract the year from the date
+  mutate(month = as.numeric(format(date, "%m"))) |> # Extract the month from the date
+  select(zip_code, county, date, year, month, house_price) |> # Select relevant columns
+  drop_na() # Remove rows with missing values for data quality
+
+# Clean and transform ZORI (rental price) dataset
+zori_tidydf = 
+  zori_df |> 
+  janitor::clean_names() |> # Standardize column names to clearer version
+  rename(zip_code = region_name, county = county_name) |> # Rename 'region_name' to 'zip_code'
+  mutate(county = gsub(" County", "", county)) |> 
+  pivot_longer(
+    cols = starts_with("x20"), 
+    names_to = "date", 
+    values_to = "rental_price") |> 
+  mutate(date = as.Date(gsub("^x", "", date), format = "%Y_%m_%d")) |> # Remove 'x' from date and convert to Date format
+  mutate(year = as.numeric(format(date, "%Y"))) |> 
+  mutate(month = as.numeric(format(date, "%m"))) |>
+  select(zip_code, county, date, year, month, rental_price) |> # Select necessary columns
+  drop_na() # Remove rows with missing values
+```
+
+```{r}
+# zip code df
+url = "https://p8105.com/data/zip_codes.html"
+zip_code_html = read_html(url)
+
+zip_code_df =
+  zip_code_html |> 
+  html_table() |> 
+  as.data.frame() |> 
+  janitor::clean_names() |> 
+  mutate(borough = case_when(
+    county == "Bronx" ~ "Bronx",
+    county == "Kings" ~ "Brooklyn",
+    county == "New York" ~ "Manhattan",
+    county == "Queens" ~ "Queens",
+    county == "Richmond" ~ "Staten Island",
+    TRUE ~ "Other"
+  )) |> 
+  select(zip_code, county, neighborhood, borough) |> 
+  drop_na()
+```
+
+```{r}
+# merge the zori & zhvi with zip code based on both the `zip_code` and `county`
+zori_merged = left_join(zori_tidydf, zip_code_df, by = c("zip_code", "county")) |> 
+  select(-date)
+zhvi_merged = left_join(zhvi_tidydf, zip_code_df, by = c("zip_code", "county")) |> 
+  select(-date)
+```
+
+
+```{r}
+# merge the zillow information
+zillow_merged = merge(zori_merged, zhvi_merged, by = c("zip_code", "county", "borough", "neighborhood", "year", "month")) |> 
+  drop_na()
+```
+
+```{r}
+# define the binary variable of rodent activity
+rodent_reg =
+  rat_tidydf |> 
+  mutate(rodent_bi = case_when(
+    result == "Rat Activity" ~ 1,
+    TRUE ~ 0
+  )) 
+head(rodent_reg)
+```
+
+
+```{r}
+rodent_reg_merged = 
+  left_join(zillow_merged, rodent_reg, by = c("zip_code", "borough", "year", "month"))
+head(rodent_reg_merged)
+```
+
+# Data Analysis
+
+describe 0 and 1
+
+## Is the rental price of houses significantly related to the rodent activity?
+
+```{r}
+# Logistic Regression: Rental Price vs Rodent Activity
+model1 <- glm(rodent_bi ~ rental_price, family = binomial, data = rodent_reg_merged)
+
+# Creating Regression Model Table
+model1 |>
+  broom::tidy() |>
+  select(term, estimate, p.value) |>
+  knitr::kable(digits = 10)
+```
+
+$$\text{log}(\frac{P(\text{rodent_bi} = 1)}{1 - P(\text{rodent_bi} = 1)}) = -0.766 + 0.0000779 \times \text{rental price}$$
+
+Where:
+
+* $P(\text{rodent_bi} = 1))$ is the probability of observing rodent activity.
+* $\text{log}(\frac{P}{1-P})$ is the log-odds of rodent activity.
+
+**Intercept ($\beta_0$):** -0.766
+
+This represents the log-odds of rodent activity when the rental price is 0.
+
+* Since the intercept value is negative ($\beta_0 = -0.766$), the log-odds of rodent activity are less than zero when the rental price is 0.
+* Odds = $e^{\beta_0} = e^{-0.766} \approx 0.465$. This implies that, when the rental price is 0, the odds of rodent activity are approximately 0.465:1, meaning it's less likely than not.
+
+**Coefficient for `rental_price` ($\beta_1$):** 0.0000779
+
+The coefficient represents the change in the log-odds of rodent activity for a one-unit increase in the rental price.
+
+* For every one-unit increase in the rental price, the log-odds of rodent activity increase by 0.0000779.
+* Odds Ratio = $e^{\beta_1} = e^{0.0000779} \approx 1$. This indicates that a small increase in rental price slightly increases the odds of rodent activity.
+
+**Statistical Significance:**
+
+Both p-values for the intercept and coefficient are <2e-16 $\approx$ 0, meaning they are statistically significant at any common significance level (e.g., $\alpha = 0.05$). This suggests that both the intercept and the effect of rental price on rodent activity are statistically significant.
+
+**Summary:** 
+
+* Rental price has a statistically significant but very small positive relationship with rodent activity. While significant, the effect size is negligible, meaning rental price is not a strong predictor of rodent activity.
+* This suggests that other factors likely play a more significant role in determining rodent activity in the dataset.
+
+## Is the value of houses significantly related to the rodent activity?
+
+```{r}
+# Logistic Regression: House Value vs Rodent Activity
+model2 = glm(rodent_bi ~ house_price, family = binomial, data = rodent_reg_merged)
+
+# Creating Regression Model Table
+model2 |>
+  broom::tidy() |>
+  select(term, estimate, p.value) |>
+  knitr::kable(digits = 10)
+
+summary(model2)
+```
+
+$$\text{log}(\frac{P(\text{rodent_bi} = 1)}{1 - P(\text{rodent_bi} = 1)}) = -0.451 + (-0.0000001) \times \text{house value}$$
+
+**Intercept ($\beta_0$):** -0.451
+
+This represents the log-odds of rodent activity when the house value is 0.
+
+* Since `house_price` = 0 is unrealistic (as house prices cannot be zero), the intercept primarily serves as a baseline log-odds for the model.
+* Odds = $e^{\beta_0} = e^{-0.451} \approx 0.637$. This means that the odds of rodent activity are approximately 0.637:1 when house price is 0 (hypothetically).
+
+**Coefficient for `rental_price` ($\beta_1$):** -0.0000001
+
+The coefficient indicates the change in log-odds of rodent activity for a one-unit increase in house price.
+
+* For each one-unit increase in house price, the log-odds of rodent activity decrease by 0.0000001.
+* Odds Ratio = $e^{\beta_1} = e^{-0.0000001} \approx 1$. This suggests that an increase in house price very slightly reduces the odds of rodent activity. However, the effect size is extremely small and likely negligible in practical terms.
+
+**Statistical Significance:**
+
+Both p-values for the intercept and coefficient $\approx$ 0, meaning they are statistically significant at any common significance level (e.g., $\alpha = 0.05$). This means the relationship between house price and rodent activity is statistically significant, but the effect size is so small that it has little practical importance.
+
+**Summary:** 
+
+* Higher house prices are slightly associated with lower rodent activity, but the effect is negligible.
+* While statistically significant, the effect size is so small that house price is unlikely to be a meaningful predictor of rodent activity. Other variables are likely more important in explaining the variation in rodent activity.
+
+
+## Is borough a confounder on the relationship between rodent activity and rental price? (Also between rodent activity and house value?)
+
+### Is borough significantly related to the rental price?
+
+```{r}
+#Linear regression model: rental price and borough
+model3 <- lm(rental_price ~ borough, data = rodent_reg_merged)
+
+# Creating Regression Model Table
+model3 |>
+  broom::tidy() |>
+  select(term, estimate, p.value) |>
+  knitr::kable(digits = 10)
+
+summary(model3)
+```
+
+$$\text{rental price} = 2100.03 + 805.85\times \text{Brooklyn} + 1148.49\times \text{Manhattan} + 379.75\times \text{Queens} + 45.98\times \text{Staten Island}$$
+Where:
+
+* $\beta_0$: Intercept (average rental price in the reference category, Bronx).
+* $\beta_{1,2,3,4}$: Coefficients for the borough dummy variables. These represent the difference in average rental price between each borough and the Bronx.
+
+**Intercept ($\beta_0$):** 2100.03
+
+This represents the average rental price in the Bronx (the reference borough).
+
+**Coefficient for borough ($\beta_{1,2,3,4}$):**
+
+This indicates how much the average rental price in each borough (Brooklyn, Manhattan, Queens, Staten Island) is higher than in the Bronx. All are positive.
+
+**Statistical Significance:**
+
+The overall p-value for the model (p < 2e-16) indicates that borough is significantly related to rental price.
+The p-values for each borough relative to the reference category (Bronx) are all statistically significant (p < 0.001), meaning rental prices differ significantly across boroughs.
+
+**Summary:** 
+
+Borough is significantly related to rental price, with notable differences in average rental prices across boroughs.
+
+### Is borough significantly related to the rodent activity?
+
+```{r}
+#Linear regression model: rodent activity and borough
+model4 <- glm(rodent_bi ~ borough, data = rodent_reg_merged)
+
+# Creating Regression Model Table
+model4 |>
+  broom::tidy() |>
+  select(term, estimate, p.value) |>
+  knitr::kable(digits = 10)
+
+summary(model4)
+```
+
+$$\text{rodent activity}=0.441+(−0.0847)\times \text{Brooklyn}+(−0.0350)\times \text{Manhattan}+(−0.1631)\text{Queens}+(−0.3443)\times \text{StatenIsland}$$
+Where:
+
+* $\beta_0$: Intercept (baseline probability of rodent activity in the reference borough, Bronx).
+* $\beta_{1,2,3,4}$: Coefficients representing the difference in rodent activity between each borough and the Bronx.
+
+**Intercept ($\beta_0$):** 0.441
+
+This represents the baseline probability of rodent activity in the Bronx (the reference category).
+
+**Coefficient for borough ($\beta_{1,2,3,4}$):**
+
+The coefficient for each borough (Brooklyn, Manhattan, Queens, Staten Island) represents the difference in the average probability of rodent activity between each borough and the Bronx. For example, the probability of rodent activity in Brooklyn is 0.0847 lower than in the Bronx.
+
+**Statistical Significance:**
+
+All coefficients, including the intercept, have p < 0.001, indicating that the differences in rodent activity probabilities across boroughs are statistically significant.
+
+**Summary:** 
+
+Borough is significantly related to rodent activity.
+
+
+
+
+
+

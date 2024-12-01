@@ -18,10 +18,14 @@ rat |>
   summarize(n = n()) |>
   ggplot(aes(x = month, y = n)) + geom_point() +
   facet_wrap(~result)
+
+rat_07 = 
+  rat |> filter(month == 07)
+
+nrow(rat_07)
 ```
 
 ```{r}
-
 food = read.csv("data/food_scrap_drop_off.csv") |>
   janitor::clean_names()
 
@@ -33,4 +37,5 @@ zori_df =
   read.csv("zori_df_2020_2024.csv") |>
   filter(state_name == "NY")
 ```
+
 
