@@ -1,0 +1,104 @@
+---
+title: "Data Analysis"
+author: "Mingye"
+date: "2024-12-03"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(tidyr)
+library(rvest)
+library(janitor)
+```
+
+
+```{r}
+# data import 
+rat_df = read.csv("data/rat_2020_2024.csv")
+food_scrap_df = 
+  read.csv("data/food_scrap_drop_off.csv")
+zhvi_df = read.csv("data/ny_zhvi_df_2020_2024.csv")
+zori_df = read.csv("data/ny_zori_df_2020_2024.csv")
+
+head(rat_df)
+head(food_scrap_df)
+head(zhvi_df)
+head(zori_df)
+```
+
+
+```{r}
+# Analyze the distribution of food scrap drop-off sites by borough
+borough_distribution <- food_scrap_df %>% 
+  group_by(borough) %>% 
+  summarise(count = n()) %>% 
+  arrange(desc(count))
+
+# Display the borough distribution
+print("Borough Distribution:")
+print(borough_distribution)
+```
+
+```{r}
+# Borough distribution plot
+ggplot(borough_distribution, aes(x = reorder(borough, -count), y = count)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  theme_minimal() +
+  labs(title = "Distribution of Food Scrap Drop-off Sites by Borough",
+       x = "Borough",
+       y = "Number of Sites") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+```{r}
+# Analyze the temporal patterns
+# First, let's create a simplified season categorization
+food_scrap_df <- food_scrap_df %>%
+  mutate(
+    operation_type = case_when(
+      grepl("Year Round", open_month, ignore.case = TRUE) ~ "Year Round",
+      grepl("Seasonal|Spring|Summer|Fall|Winter", open_month, ignore.case = TRUE) ~ "Seasonal",
+      TRUE ~ "Specific Months"
+    )
+  )
+
+# Create a summary of operational patterns
+operation_summary <- food_scrap_df %>%
+  group_by(operation_type) %>%
+  summarise(count = n())
+
+print("Operation Pattern Summary:")
+print(operation_summary)
+
+# Create a scatter plot of locations
+ggplot(food_scrap_df, aes(x = longitude, y = latitude)) +
+  geom_point(aes(color = borough), alpha = 0.6) +
+  theme_minimal() +
+  labs(title = "Geographic Distribution of Food Scrap Drop-off Sites",
+       x = "Longitude",
+       y = "Latitude") +
+  theme(legend.position = "right")
+```
+
+```{r}
+# Adjust the plot to make boroughs more prominent and counties less emphasized
+plot_county <- ggplot(zhvi_df, aes(x = county_name, fill = county_name)) +
+  geom_bar() +
+  labs(title = "Demographic Differences by Borough", x = "Borough", y = "Count", fill = "Borough") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 1),
+        plot.title = element_text(size = 14),
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 8))
+
+# Display the updated plot
+print(plot_county)
+```
+
+```{r}
+
+```
+
