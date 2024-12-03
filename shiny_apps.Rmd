@@ -29,7 +29,7 @@ library(sf)
 rat_df = read.csv("shiny app data/data/rat_2020_2024.csv")
 food_df = read.csv("shiny app data/data/food_scrap_drop_off.csv")
 rental_df = read.csv("shiny app data/data/final_data.csv")
-nyc_boroughs = st_read("Borough Boundaries.geojson")
+nyc_boroughs = st_read("Borough Boundaries.geojson", quiet=TRUE)
 ```
 
 ```{r}
