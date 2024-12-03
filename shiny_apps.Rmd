@@ -1,0 +1,218 @@
+---
+title: "Shiny Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(viridis)
+library(ggplot2)
+library(shiny)
+library(ggtext)
+library(textshaping)
+library(leaflet)
+library(shiny)
+library(leaflet)
+library(dplyr)
+library(sf)
+
+```
+
+
+
+```{r}
+rat_df = read.csv("shiny app data/data/rat_2020_2024.csv")
+food_df = read.csv("shiny app data/data/food_scrap_drop_off.csv")
+rental_df = read.csv("shiny app data/data/final_data.csv")
+nyc_boroughs = st_read("Borough Boundaries.geojson")
+```
+
+```{r}
+rat_df1= rat_df |>
+  mutate(rat_action = ifelse(result == "Rat Activity", 1, 0))|>
+  filter(rat_action==1)
+```
+
+Column {data-width=450}
+-----------------------------------------------------------------------
+### Chart A
+
+```{r message=FALSE, warning=FALSE}
+
+ui = fluidPage(
+  titlePanel("Rat Activity Map in New York City"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      selectInput(inputId = "borough", label = "Select Borough:",
+                  choices = c("All" = "All", unique(rat_df1$borough))),
+      
+      dateRangeInput(inputId = "date_select", label = "Select Date Range:",
+                     start = min(as.Date(paste0(rat_df1$year, "-", rat_df1$month, "-01"))),
+                     end = max(as.Date(paste0(rat_df1$year, "-", rat_df1$month, "-01"))))
+    ),
+    
+    mainPanel(
+      leafletOutput(outputId = "rat_map")
+    )
+  )
+)
+
+server = function(input, output) {
+  filtered_data = reactive({
+    req(input$borough, input$date_select)
+    
+    dates = as.Date(paste0(rat_df1$year, "-", rat_df1$month, "-01"))
+    
+    if (input$borough == "All") {
+      rat_df1 |>
+        filter(dates >= input$date_select[1],
+               dates <= input$date_select[2])
+    } else {
+      rat_df1 |>
+        filter(borough == input$borough,
+               dates >= input$date_select[1],
+               dates <= input$date_select[2])
+    }
+  })
+  
+  output$rat_map = renderLeaflet({
+    data = filtered_data()
+    
+    colors = setNames(c("#FF0005", "#F0FDF0", "#5030FF", "#FFEF00", "#DF00F0"), unique(nyc_boroughs$NAME))
+    
+    leaflet() |>
+      addProviderTiles(providers$OpenStreetMap,  
+                       options = providerTileOptions(noWrap = TRUE)) %>%  
+      setView(lng = -74.0060, lat = 40.7128, zoom = 11) %>%  
+      
+    
+      addPolygons(data = nyc_boroughs,
+                  fillColor = ~colors[as.character(nyc_boroughs$boro_name)], 
+                  fillOpacity = 0.5,
+                  color = colors,  
+                  weight = 1,
+                  popup = ~nyc_boroughs$boro_name) %>%
+      
+      addCircleMarkers(data = data,
+                       lng = ~longitude, lat = ~latitude, 
+                       radius = 3, 
+                       color ="#00F0FF", 
+                       fillOpacity = 0.4, 
+                       popup = paste("<strong>Borough: </strong>", data$borough,
+                                     "<br><strong>Date: </strong>", format(as.Date(paste0(data$year, "-", data$month, "-01")), "%Y-%m")))
+  })
+}
+
+
+shinyApp(ui = ui, server = server)
+```
+
+
+Column {data-width=550}
+-----------------------------------------------------------------------
+
+### Chart B
+```{r}
+
+food_ui = fluidPage(
+  titlePanel("Food Scrap drop Map in New York City"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      selectInput(inputId = "borough", label = "Select Borough:",
+                  choices = c("All" = "All", unique(food_df$borough)))
+    ),
+    
+    mainPanel(
+      leafletOutput(outputId = "junk_food_map")
+    )
+  )
+)
+
+
+food_server = function(input, output) {
+  filtered_data = reactive({
+    req(input$borough)
+    
+    if (input$borough == "All") {
+      food_df
+    } else {
+      food_df |>
+        filter(borough == input$borough)
+    }
+  })
+  
+  output$junk_food_map = renderLeaflet({
+    data = filtered_data()
+    
+    
+    colors = setNames(c("#FF0000", "#D7FF5F", "#00F0FF", "#5DFD35", "#0F00FF"), unique(nyc_boroughs$NAME))
+    
+    leaflet() |>
+      addProviderTiles(providers$OpenStreetMap, 
+                       options = providerTileOptions(noWrap = TRUE)) %>% 
+      setView(lng = -74.0060, lat = 40.7128, zoom = 11) %>% 
+
+      addPolygons(data = nyc_boroughs,
+                  fillColor = ~colors[as.character(nyc_boroughs$NAME)],  
+                  fillOpacity = 0.3,
+                  color = colors, 
+                  weight = 1,
+                  popup = ~nyc_boroughs$NAME) %>%
+      
+  
+      addCircleMarkers(data = data,
+                       lng = ~longitude, lat = ~latitude,  
+                       radius = 3,  
+                       color = "#0F00FF" ,
+                       fillOpacity = 0.5,  
+                       popup = ~paste("<strong>Borough: </strong>", data$borough))
+  })
+}
+
+
+shinyApp(ui = food_ui, server = food_server)
+
+```
+
+
+### Chart C
+
+```{r}
+# Define UI for the Shiny app
+rental_df$date = as.Date(gsub("^x", "", rental_df$date), format="%Y_%m_%d")
+
+
+df_ui = fluidPage(
+  titlePanel("Rental Price Time Series"),
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("borough", "Select Borough", choices = unique(rental_df$borough))
+    ),
+    mainPanel(
+      plotOutput("time_series_plot")
+    )
+  )
+)
+
+# Define server logic
+df_server = function(input, output) {
+  output$time_series_plot = renderPlot({
+    ggplot(rental_df[rental_df$borough == input$borough, ], aes(x = date, y = rental_price)) +
+      geom_line() +
+      labs(title = "Rental Price Over Time", x = "Date", y = "Rental Price") +
+      theme_minimal()
+  })
+}
+
+# Run the Shiny app
+shinyApp(ui = df_ui, server = df_server)
+```
+
+
