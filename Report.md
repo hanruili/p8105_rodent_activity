@@ -28,20 +28,34 @@ economic losses. As NYC residents ourselves, encountering rats is so
 common, which drives the need to understand rodent activity and its link
 to socioeconomic factors for better pest control strategies.
 
-## Research questions ????????
+## Research questions
 
-What questions are you trying to answer? How did these questions evolve
-over the course of the project? What new questions did you consider in
-the course of your analysis? 1. Which neighborhoods in NYC report the
-highest rodent activity, and how does this vary by season or year? Is
-there a correlation between rodent activity and proximity to food scrap
-drop-off locations? Do socioeconomic factors such as rental prices
-(ZORI) and home values (ZHVI) influence rodent activity? During the
-analysis, additional questions emerged:
+In this study, we aimed to investigate the complex relationships between
+rodent activity in New York City and various potential influencing
+factors such as temporal trends, geographic patterns, and socioeconomic
+conditions. During our regression analysis, we found that rental price
+and house value had a relatively small impact on rodent activity, which
+led us to include borough as an additional factor and explore
+interaction terms. We also aimed to identify the best predictive model
+through further model optimization and cross-validation.
 
-Are neighborhoods with lower rent or home values more likely to report
-higher rodent activity? How effective are NYC’s current rodent control
-strategies based on inspection data?
+The primary research questions are:
+
+1.  **Temporal Trends in Rodent Activity**
+    - How does rodent activity vary across years and months?
+2.  **Geographic Distribution**
+    - How is rodent activity distributed across different boroughs?  
+    - Which areas have the highest levels of rodent activity?
+    - Does the distribution of rodent activity correlate with the
+      location of food scrap drop-offs?
+3.  **Socioeconomic Factors**
+    - How are rental prices and house values related to rodent activity?
+4.  **Regression Models to Explain Rodent Activity**
+    - Does borough influence the relationship between socioeconomic
+      factors (like rental prices) and rodent activity?
+    - Are there significant interactions between socioeconomic factors
+      and rodent activity?
+    - What’s the best predictive model?
 
 ## Data
 
@@ -88,9 +102,99 @@ datasets.<br>
 Visualizations, summaries, and exploratory statistical analyses. Justify
 the steps you took, and show any major changes to your ideas.
 
-## Statistical analysis????????
+## Statistical Analysis
 
-If you undertake formal statistical analyses, describe these in detail
+We analyzed the relationships between rodent activity and factors such
+as rental price, house value, and borough using logistic and linear
+regression models. The key questions were:
+
+1.  Is rental price significantly related to rodent activity?
+2.  Is house value significantly related to rodent activity?
+3.  Does borough act as a confounder in these relationships?
+4.  What the best model?
+
+### Insights from the Models
+
+#### 1. Rental Price and Rodent Activity
+
+- **Model:**
+  $$\log\left[\frac{P(\text{rodent activity} = 1)}{1 - P(\text{rodent activity} = 1)}\right] = -0.766 + 0.0000779 \times \text{rental price}$$
+- **Result:** Rental price has a statistically significant but
+  negligible positive effect on rodent activity, slightly increasing the
+  odds of rodent activity.
+
+#### 2. House Value and Rodent Activity
+
+- **Model:**
+  $$\log\left[\frac{P(\text{rodent activity} = 1)}{1 - P(\text{rodent activity} = 1)}\right] = -0.451 - 0.0000001 \times \text{house value}$$
+- **Result:** House value has a statistically significant but negligible
+  negative effect on rodent activity, slightly decreasing the odds of
+  rodent activity.
+
+#### 3. Borough as a Confounder
+
+##### 3.1.1 Borough and Rental Price
+
+- **Model:**
+  $$\text{rental price} = 2100.03 + 805.85 \times \text{Brooklyn} + 1148.49 \times \text{Manhattan} + 379.75 \times \text{Queens} + 45.98 \times \text{Staten Island}$$
+- **Result:** Rental price varies significantly by borough, with higher
+  prices in Manhattan and Brooklyn.
+
+##### 3.1.2 Borough and Rodent Activity
+
+- **Model:**
+  $$\text{rodent activity} = 0.441 - 0.0847 \times \text{Brooklyn} - 0.0350 \times \text{Manhattan} - 0.1631 \times \text{Queens} - 0.3443 \times \text{Staten Island}$$
+- **Result:** Borough is significantly related to rodent activity.
+
+##### 3.1.3 Rodent Activity with Rental Price and Borough
+
+- **Model:**
+  $$\text{rodent activity} = 0.4179 - 0.0936 \times \text{Brooklyn} - 0.0476 \times \text{Manhattan} - 0.1673 \times \text{Queens} - 0.3448 \times \text{Staten Island} + 0.000011 \times \text{rental price}$$
+- **Result:** Both borough and rental price are significant predictors.
+
+##### 3.2.1 Borough and House Value
+
+- **Model:**
+  $$\text{house value} = 434080.5 + 517358.1 \times \text{Brooklyn} + 759697.9 \times \text{Manhattan} + 303134.7 \times \text{Queens}$$
+
+##### 3.2.2 Rodent Activity with House Value and Borough
+
+- **Model:**
+  $$\text{rodent activity} = 0.4626 - 0.0590 \times \text{Brooklyn} + 0.0027 \times \text{Manhattan} - 0.1480 \times \text{Queens} - 0.3335 \times \text{Staten Island} - 0.000000497 \times \text{house value}$$
+- **Result:** Borough is significant, and house value has a small but
+  significant effect.
+
+##### 3.3 Rodent Activity with Rental Price, House Value, and Borough
+
+- **Model:**
+  $$\text{rodent activity} = 0.3864 - 0.0714 \times \text{Brooklyn} - 0.0137 \times \text{Manhattan} - 0.1510 \times \text{Queens} - 0.3252 \times \text{Staten Island} + 0.0000462 \times \text{rental price} - 0.000000978 \times \text{house value}$$
+- **Result:** Borough remains the strongest predictor, with rental price
+  and house value also significant but with small effect. Therefore, we
+  want to see whether to include rental price and house value in the
+  model.
+
+##### 3.4 Comparison of models with or without rental price and house value
+
+- **Result:** Using cross-validation, the model including rental price
+  and house value showed a lower RMSE compared to the model without
+  these variables, indicating better fit.
+
+#### 4. Interaction Term of Rental Price, House Value, and Borough
+
+##### 4.1 Interaction Significance
+
+- **Result:** There are significant interactions between borough and
+  both rental and house prices, especially in Brooklyn and Queens,
+  indicating that the relationship between prices and rodent activity
+  differs across boroughs. However, some interaction effects are not
+  statistically significant, suggesting limited predictive value from
+  the added complexity. Therefore, we want to test further that whether
+  to include the interaction term.
+
+##### 4.2 Model Comparison with and Without Interaction Terms
+
+- **Result:** The model with interaction terms had a lower RMSE than the
+  model without, indicating improved predictive accuracy.
 
 ## Discussion?????????
 

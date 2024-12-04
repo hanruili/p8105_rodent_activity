@@ -24,11 +24,6 @@ food_scrap_df =
   read.csv("data/food_scrap_drop_off.csv")
 zhvi_df = read.csv("data/ny_zhvi_df_2020_2024.csv")
 zori_df = read.csv("data/ny_zori_df_2020_2024.csv")
-
-head(rat_df)
-head(food_scrap_df)
-head(zhvi_df)
-head(rat_df)
 ```
 
 ```{r}
@@ -122,14 +117,12 @@ rodent_reg =
     result == "Rat Activity" ~ 1,
     TRUE ~ 0
   )) 
-head(rodent_reg)
 ```
 
 
 ```{r}
 rodent_reg_merged = 
   left_join(zillow_merged, rodent_reg, by = c("zip_code", "borough", "year", "month"))
-head(rodent_reg_merged)
 ```
 
 
@@ -389,7 +382,7 @@ $$\text{rodent activity} = 0.4626+(−0.0590)\times \text{Brooklyn}+(0.0027)\tim
 Where:
 
 * $\beta_0:$ Intercept, the baseline probability of rodent activity in the Bronx with house price = 0.
-* $\beta_{1,2,2,4}:$ Coefficients for boroughs (compared to the Bronx).
+* $\beta_{1,2,3,4}:$ Coefficients for boroughs (compared to the Bronx).
 * $\beta_5:$ Coefficient for house price, representing the effect of house price on rodent activity.
 
 **Intercept ($\beta_0$):** 0.4626
@@ -460,7 +453,7 @@ Borough is a strong predictor of rodent activity. Rental price and house price a
 
 **In conclusion, Borough remains the dominant predictor of rodent activity in the model. Although rental price and house price are statistically significant, their effects are too small to have practical relevance. Here, we need to compare the models to decide which predictors to consider.**
 
-### Comparison of models including rental price and house value, and excluding rental price and house value
+### Comparison of models with or without rental price and house value
 
 ```{r}
 cv1_df = 
@@ -489,8 +482,6 @@ The model excluding rental price and house value has a much higher root mean squ
 
 ## Testing for Interaction between rental price, house value, and borough
 
-The p-value for the interaction term (p = 0.9736) indicates that the interaction between rental price and house price does not significantly affect the probability of rodent activity.
-
 ```{r}
 #Regression model testing for confounding
 model9 = glm(formula = rodent_bi ~ borough + rental_price + house_price + 
@@ -510,7 +501,7 @@ This model is considerably more complex, with numerous interaction terms. The re
 Therefore, we need to check further.
 
 
-## Comparison of income including models with and without interaction term:
+## Comparison of models with and without interaction term:
 
 ```{r}
 cv2_df = 
