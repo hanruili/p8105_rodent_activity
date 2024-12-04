@@ -1,0 +1,74 @@
+---
+title: "data_clean"
+author: "Meitong Zhou"
+date: "2024-12-04"
+output: github_document
+---
+
+```{r}
+library(tidyverse) 
+library(janitor)
+library(readr)
+library(rvest)
+```
+```{r}
+food_scrap_drop_off = read_csv(
+  file = "Food_Scrap_Drop-Off_Locations_in_NYC_20241118.csv",
+  na = c(".", "NA", "")
+) |>
+  clean_names()
+```
+```{r}
+write_csv(food_scrap_drop_off, "shiny app data/data/food_scrap_drop_off.csv")
+```
+
+
+
+```{r}
+zori_data = read.csv("Zip_zori_uc_sfrcondomfr_sm_month_NYC.csv") 
+zori_data = janitor::clean_names(zori_data) |>
+    pivot_longer(
+    cols = starts_with("x20"),
+    names_to = "date",
+    values_to = "rental_price"
+  )
+
+url = "https://p8105.com/data/zip_codes.html"
+zip_code_data = read_html(url) |>
+  html_table(fill = TRUE)
+zip_code_data = zip_code_data[[1]]
+zip_code_data = janitor::clean_names(zip_code_data)
+```
+
+
+```{r}
+zip_code_data = zip_code_data |>
+  mutate(borough = case_when(
+    county == "New York" ~ "Manhattan",
+    county == "Kings" ~ "Brooklyn",
+    county == "Queens" ~ "Queens",
+    county == "Bronx" ~ "Bronx",
+    county == "Richmond" ~ "Staten Island"
+  ))
+```
+
+```{r}
+zori_data = zori_data |>
+  rename(zip_code = region_name)
+head(zori_data)
+```
+```{r}
+merged_data = merge(zori_data, zip_code_data, by = "zip_code")
+head(merged_data) 
+```
+```{r}
+final_data = merged_data |>
+  select(zip_code, borough, rental_price, neighborhood, date)
+final_data = final_data |> 
+  filter(!is.na(rental_price))
+head(final_data)
+
+
+write.csv(final_data, file = "shiny app data/data/final_data.csv", row.names = FALSE)
+```
+
