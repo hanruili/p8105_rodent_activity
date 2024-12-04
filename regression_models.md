@@ -1,48 +1,18 @@
 regression_models
 ================
-Yujing FU
+Yujing Fu, Hanrui Li
 2024-11-30
 
 ``` r
 library(tidyverse)
-```
-
-    ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-    ## ✔ dplyr     1.1.4     ✔ readr     2.1.5
-    ## ✔ forcats   1.0.0     ✔ stringr   1.5.1
-    ## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
-    ## ✔ lubridate 1.9.3     ✔ tidyr     1.3.1
-    ## ✔ purrr     1.0.2     
-    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-    ## ✖ dplyr::filter() masks stats::filter()
-    ## ✖ dplyr::lag()    masks stats::lag()
-    ## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
-
-``` r
 library(dplyr)
 library(ggplot2)
 library(lubridate)
 library(tidyr)
 library(rvest)
-```
-
-    ## 
-    ## Attaching package: 'rvest'
-    ## 
-    ## The following object is masked from 'package:readr':
-    ## 
-    ##     guess_encoding
-
-``` r
 library(janitor)
+library(modelr)
 ```
-
-    ## 
-    ## Attaching package: 'janitor'
-    ## 
-    ## The following objects are masked from 'package:stats':
-    ## 
-    ##     chisq.test, fisher.test
 
 ``` r
 # data import 
@@ -433,7 +403,13 @@ head(rodent_reg_merged)
 
 # Data Analysis
 
-describe 0 and 1
+**rodent_bi = 1**: Indicates “Rat Activity” was found during the
+inspection. This means that there was a confirmed presence of rodent
+activity at the inspected location.
+
+**rodent_bi = 0**: Indicates “No Rat Activity” or any other result
+different from “Rat Activity”. This means there was no confirmed rodent
+activity at the inspected location.
 
 ## Is the rental price of houses significantly related to the rodent activity?
 
@@ -453,12 +429,12 @@ model1 |>
 | (Intercept)  | -0.7659535537 |       0 |
 | rental_price |  0.0000779043 |       0 |
 
-$$\text{log}(\frac{P(\text{rodent_bi} = 1)}{1 - P(\text{rodent_bi} = 1)}) = -0.766 + 0.0000779 \times \text{rental price}$$
+$$log[\frac{P(\text{rodent activity} = 1)}{1 - P(\text{rodent activity} = 1)}] = -0.766 + 0.0000779 \times \text{rental price}$$
 
 Where:
 
-- $P(\text{rodent_bi} = 1))$ is the probability of observing rodent
-  activity.
+- $P(\text{rodent activity} = 1))$ is the probability of observing
+  rodent activity.
 - $\text{log}(\frac{P}{1-P})$ is the log-odds of rodent activity.
 
 **Intercept ($\beta_0$):** -0.766
@@ -519,31 +495,7 @@ model2 |>
 | (Intercept) | -0.4510699 |       0 |
 | house_price | -0.0000001 |       0 |
 
-``` r
-summary(model2)
-```
-
-    ## 
-    ## Call:
-    ## glm(formula = rodent_bi ~ house_price, family = binomial, data = rodent_reg_merged)
-    ## 
-    ## Coefficients:
-    ##               Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept) -4.511e-01  1.283e-02 -35.146  < 2e-16 ***
-    ## house_price -9.999e-08  1.260e-08  -7.935 2.11e-15 ***
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## (Dispersion parameter for binomial family taken to be 1)
-    ## 
-    ##     Null deviance: 197090  on 149878  degrees of freedom
-    ## Residual deviance: 197027  on 149877  degrees of freedom
-    ##   (413 observations deleted due to missingness)
-    ## AIC: 197031
-    ## 
-    ## Number of Fisher Scoring iterations: 4
-
-$$\text{log}(\frac{P(\text{rodent_bi} = 1)}{1 - P(\text{rodent_bi} = 1)}) = -0.451 + (-0.0000001) \times \text{house value}$$
+$$log[\frac{P(\text{rodent activity} = 1)}{1 - P(\text{rodent activity} = 1)}] = -0.451 + (-0.0000001) \times \text{house value}$$
 
 **Intercept ($\beta_0$):** -0.451
 
@@ -609,32 +561,6 @@ model3 |>
 | boroughQueens        |  379.75174 | 0.0000000000 |
 | boroughStaten Island |   45.97548 | 0.0002538912 |
 
-``` r
-summary(model3)
-```
-
-    ## 
-    ## Call:
-    ## lm(formula = rental_price ~ borough, data = rodent_reg_merged)
-    ## 
-    ## Residuals:
-    ##     Min      1Q  Median      3Q     Max 
-    ## -1428.6  -406.9   -82.7   346.6  4595.9 
-    ## 
-    ## Coefficients:
-    ##                      Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)          2100.029      4.516 465.036  < 2e-16 ***
-    ## boroughBrooklyn       805.847      5.115 157.548  < 2e-16 ***
-    ## boroughManhattan     1148.491      5.332 215.389  < 2e-16 ***
-    ## boroughQueens         379.752      6.320  60.085  < 2e-16 ***
-    ## boroughStaten Island   45.975     12.567   3.658 0.000254 ***
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## Residual standard error: 609.1 on 150287 degrees of freedom
-    ## Multiple R-squared:  0.2801, Adjusted R-squared:  0.2801 
-    ## F-statistic: 1.462e+04 on 4 and 150287 DF,  p-value: < 2.2e-16
-
 $$\text{rental price} = 2100.03 + 805.85\times \text{Brooklyn} + 1148.49\times \text{Manhattan} + 379.75\times \text{Queens} + 45.98\times \text{Staten Island}$$
 Where:
 
@@ -671,7 +597,7 @@ differences in average rental prices across boroughs.
 ### Is borough significantly related to the rodent activity?
 
 ``` r
-#Linear regression model: rodent activity and borough
+#Regression model: rodent activity and borough
 model4 <- glm(rodent_bi ~ borough, data = rodent_reg_merged)
 
 # Creating Regression Model Table
@@ -688,33 +614,6 @@ model4 |>
 | boroughManhattan     | -0.03503736 |       0 |
 | boroughQueens        | -0.16305830 |       0 |
 | boroughStaten Island | -0.34428366 |       0 |
-
-``` r
-summary(model4)
-```
-
-    ## 
-    ## Call:
-    ## glm(formula = rodent_bi ~ borough, data = rodent_reg_merged)
-    ## 
-    ## Coefficients:
-    ##                       Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)           0.441010   0.003548 124.287   <2e-16 ***
-    ## boroughBrooklyn      -0.084703   0.004019 -21.073   <2e-16 ***
-    ## boroughManhattan     -0.035037   0.004192  -8.358   <2e-16 ***
-    ## boroughQueens        -0.163058   0.004973 -32.792   <2e-16 ***
-    ## boroughStaten Island -0.344284   0.009887 -34.822   <2e-16 ***
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    ## 
-    ## (Dispersion parameter for gaussian family taken to be 0.2289086)
-    ## 
-    ##     Null deviance: 34830  on 149878  degrees of freedom
-    ## Residual deviance: 34307  on 149874  degrees of freedom
-    ##   (413 observations deleted due to missingness)
-    ## AIC: 204359
-    ## 
-    ## Number of Fisher Scoring iterations: 2
 
 $$\text{rodent activity}=0.441+(−0.0847)\times \text{Brooklyn}+(−0.0350)\times \text{Manhattan}+(−0.1631)\text{Queens}+(−0.3443)\times \text{StatenIsland}$$
 Where:
@@ -746,3 +645,365 @@ are statistically significant.
 **Summary:**
 
 Borough is significantly related to rodent activity.
+
+### Regression model with both borough and rental price
+
+``` r
+#Regression model testing for confounding
+model5 <- glm(rodent_bi ~ borough + rental_price, data = rodent_reg_merged)
+
+# Creating Regression Model Table
+model5 |>
+  broom::tidy() |>
+  select(term, estimate, p.value) |>
+  knitr::kable(digits = 10)
+```
+
+| term                 |      estimate |  p.value |
+|:---------------------|--------------:|---------:|
+| (Intercept)          |  0.4179050705 | 0.00e+00 |
+| boroughBrooklyn      | -0.0935738820 | 0.00e+00 |
+| boroughManhattan     | -0.0476417252 | 0.00e+00 |
+| boroughQueens        | -0.1672550224 | 0.00e+00 |
+| boroughStaten Island | -0.3447959091 | 0.00e+00 |
+| rental_price         |  0.0000110014 | 6.13e-08 |
+
+$$\text{rodent acticvity} = 0.4179+(−0.0936)\times \text{Brooklyn}+(−0.0476)\times \text{Manhattan}+(−0.1673)\times \text{Queens}+(−0.3448)\times \text{Staten Island}+(0.000011)\times \text{rental price}$$
+
+Where:
+
+- $\beta_0:$ Intercept (baseline probability of rodent activity in the
+  Bronx with rental price = 0).
+- $\beta_{1,2,3,4}:$ Coefficients for boroughs (relative to Bronx).
+- $\beta_5:$ Coefficient for rental price, indicating how rental price
+  impacts rodent activity.
+
+**Intercept ($\beta_0$):** 0.4179
+
+The intercept represents the baseline probability of rodent activity in
+the Bronx when rental price is 0.
+
+**Coefficient for borough ($\beta_{1,2,3,4}$):**
+
+These coefficients represent the difference in probability of rodent
+activity between each borough and the Bronx (the reference borough).
+
+**Coefficient for borough ($\beta_{5}$):** 0.000011
+
+Rental price has a small positive effect on the probability of rodent
+activity.
+
+**Statistical Significance:**
+
+All predictors, including boroughs and rental price, are statistically
+significant (p \< 0.001). This suggests that both borough and rental
+price significantly contribute to the prediction of rodent activity.
+
+**Summary:**
+
+Borough remains a strong predictor of rodent activity. Rental price is
+also a significant predictor.
+
+### Is borough significantly related to the house value?
+
+``` r
+#Linear regression model: house value and borough
+model6 <- lm(house_price ~ borough, data = rodent_reg_merged)
+
+# Creating Regression Model Table
+model6 |>
+  broom::tidy() |>
+  select(term, estimate, p.value) |>
+  knitr::kable(digits = 10)
+```
+
+| term                 | estimate | p.value |
+|:---------------------|---------:|--------:|
+| (Intercept)          | 434080.5 |       0 |
+| boroughBrooklyn      | 517358.1 |       0 |
+| boroughManhattan     | 759697.9 |       0 |
+| boroughQueens        | 303134.7 |       0 |
+| boroughStaten Island | 216711.8 |       0 |
+
+$$\text{house value} = 434080.5+517358.1\times \text{Brooklyn}+759697.9\times \text{Manhattan}+303134.7\times \text{Queens}+216711.8\times \text{StatenIsland}$$
+
+Where:
+
+- $\beta_0$: Intercept (average rental price in the reference category,
+  Bronx).
+- $\beta_{1,2,3,4}$: Coefficients for the borough dummy variables,
+  indicating differences in house value relative to the Bronx.
+
+**Intercept ($\beta_0$):** 434080.5
+
+The intercept represents the average house value in the Bronx (the
+reference category).
+
+**Coefficient for borough ($\beta_{1,2,3,4}$):**
+
+These coefficients indicate how much higher the average house value is
+in each borough compared to the Bronx. All positive.
+
+**Statistical Significance:**
+
+All borough coefficients ($p\approx 0$) are statistically significant,
+indicating significant differences in average house values between the
+Bronx and other boroughs. The overall model is significant, meaning that
+borough is a significant predictor of house value.
+
+**Summary:**
+
+Borough is significantly related to house value, reflecting differences
+in property markets across New York City.
+
+### Regression model with both borough and house value
+
+``` r
+#Regression model testing for confounding
+model7 <- glm(rodent_bi ~ borough + house_price, data = rodent_reg_merged)
+
+# Creating Regression Model Table
+model7 |>
+  broom::tidy() |>
+  select(term, estimate, p.value) |>
+  knitr::kable(digits = 10)
+```
+
+| term                 |      estimate |   p.value |
+|:---------------------|--------------:|----------:|
+| (Intercept)          |  0.4625980364 | 0.0000000 |
+| boroughBrooklyn      | -0.0589711698 | 0.0000000 |
+| boroughManhattan     |  0.0027349667 | 0.5799593 |
+| boroughQueens        | -0.1479732293 | 0.0000000 |
+| boroughStaten Island | -0.3335062504 | 0.0000000 |
+| house_price          | -0.0000000497 | 0.0000000 |
+
+$$\text{rodent activity} = 0.4626+(−0.0590)\times \text{Brooklyn}+(0.0027)\times \text{Manhattan}+(−0.1480)\times \text{Queens}+(−0.3335)\times \text{Staten Island}+(−0.000000497)\times \text{house price}$$
+
+Where:
+
+- $\beta_0:$ Intercept, the baseline probability of rodent activity in
+  the Bronx with house price = 0.
+- $\beta_{1,2,2,4}:$ Coefficients for boroughs (compared to the Bronx).
+- $\beta_5:$ Coefficient for house price, representing the effect of
+  house price on rodent activity.
+
+**Intercept ($\beta_0$):** 0.4626
+
+The intercept represents the baseline probability of rodent activity in
+the Bronx (the reference category) when the house price is 0.
+
+**Coefficient for borough ($\beta_{1,2,3,4}$):**
+
+These coefficients represent the difference in the probability of rodent
+activity for each borough compared to the Bronx, controlling for house
+price.
+
+**Coefficient for borough ($\beta_{5}$):** -0.000000497
+
+House price has a very small negative effect on the probability of
+rodent activity.
+
+**Statistical Significance:**
+
+Manhattan is not statistically significant (p = 0.58), but all other
+borough coefficients are statistically significant (p \< 0.001). The
+coefficient for house price is statistically significant, but the effect
+size is negligible.
+
+**Summary:**
+
+Borough remains a significant predictor of rodent activity. House price
+also has a statistically significant effect.
+
+### Regression model with borough, rental price, and house value
+
+``` r
+#Regression model testing for confounding
+model8 <- glm(rodent_bi ~ borough + rental_price + house_price, data = rodent_reg_merged)
+
+# Creating Regression Model Table
+model8 |>
+  broom::tidy() |>
+  select(term, estimate, p.value) |>
+  knitr::kable(digits = 10)
+```
+
+| term                 |      estimate |     p.value |
+|:---------------------|--------------:|------------:|
+| (Intercept)          |  0.3864155486 | 0.000000000 |
+| boroughBrooklyn      | -0.0713618975 | 0.000000000 |
+| boroughManhattan     | -0.0136966681 | 0.006363476 |
+| boroughQueens        | -0.1510194546 | 0.000000000 |
+| boroughStaten Island | -0.3252400123 | 0.000000000 |
+| rental_price         |  0.0000462109 | 0.000000000 |
+| house_price          | -0.0000000978 | 0.000000000 |
+
+$$\text{rodent activity} = 0.3864+(−0.0714)\times \text{Brooklyn}+(−0.0137)\times \text{Manhattan}+(−0.1510)\times \text{Queens}+(−0.3252)\times \text{Staten Island}+(0.0000462)\times \text{rental price}+(−0.000000978)\times \text{house price}$$
+
+Where:
+
+- $\beta_0:$ Intercept, representing the baseline probability of rodent
+  activity in the Bronx with rental price = 0 and house price = 0.
+- $\beta_{1,2,3,4}:$ Coefficients for boroughs (relative to the Bronx).
+- $\beta_5:$ Coefficient for rental price, representing the effect of
+  rental price on rodent activity.
+- $\beta_6:$ Coefficient for house price, representing the effect of
+  house price on rodent activity.
+
+**Intercept ($\beta_0$):** 0.3864
+
+The intercept represents the baseline probability of rodent activity in
+the Bronx when rental_price=0 and house_price=0.
+
+**Coefficient for borough ($\beta_{1,2,3,4}$):**
+
+These coefficients represent the difference in the probability of rodent
+activity for each borough compared to the Bronx, controlling for rental
+price and house price.
+
+**Coefficient for borough ($\beta_{5}$):** 0.0000462
+
+Rental price has a very small positive effect on the probability of
+rodent activity.
+
+**Coefficient for borough ($\beta_{6}$):** -0.000000978
+
+House price has a very small negative effect on the probability of
+rodent activity.
+
+**Statistical Significance:**
+
+All borough coefficients are statistically significant (p\<0.01). Rental
+price and house price are statistically significant (p=0), but their
+effects are very small.
+
+**Summary:**
+
+Borough is a strong predictor of rodent activity. Rental price and house
+price are also statistically significant.
+
+**In conclusion, Borough remains the dominant predictor of rodent
+activity in the model. Although rental price and house price are
+statistically significant, their effects are too small to have practical
+relevance. Here, we need to compare the models to decide which
+predictors to consider.**
+
+### Comparison of models including rental price and house value, and excluding rental price and house value
+
+``` r
+cv1_df = 
+  crossv_mc(rodent_reg_merged, 100)
+
+cv1_df |> 
+  mutate(
+    mod_1  = map(train, \(df) glm(rodent_bi ~ borough, data = rodent_reg_merged)),
+    mod_2  = map(train, \(df) glm(rodent_bi ~ borough + rental_price + house_price, 
+                                  data = rodent_reg_merged))) |> 
+  mutate(
+    rmse_1 = map2_dbl(mod_1, test, \(mod, df) rmse(model = mod, data = df)),
+    rmse_2 = map2_dbl(mod_2, test, \(mod, df) rmse(model = mod, data = df))) |>
+  select(starts_with("rmse")) |>
+  pivot_longer(
+    everything(), 
+    names_to = "model", 
+    values_to = "rmse", 
+    names_prefix = "rmse_") |>
+  ggplot(aes(x = model, y = rmse, group = model, fill = model)) + 
+  geom_violin(alpha = 0.5) +
+  theme_minimal()
+```
+
+![](regression_models_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+The model excluding rental price and house value has a much higher root
+mean squared errors (RMSE) value than the model including rental price
+and house value. This means that the **model including rental price and
+house value** better fits our data.
+
+## Testing for Interaction between rental price, house value, and borough
+
+The p-value for the interaction term (p = 0.9736) indicates that the
+interaction between rental price and house price does not significantly
+affect the probability of rodent activity.
+
+``` r
+#Regression model testing for confounding
+model9 = glm(formula = rodent_bi ~ borough + rental_price + house_price + 
+              borough*rental_price*house_price, data = rodent_reg_merged)
+
+# Creating Regression Model Table
+model9 |>
+  broom::tidy() |>
+  select(term, estimate, p.value) |>
+  knitr::kable(digits = 10)
+```
+
+| term                                          |      estimate |     p.value |
+|:----------------------------------------------|--------------:|------------:|
+| (Intercept)                                   |  0.6955330911 | 0.000000000 |
+| boroughBrooklyn                               | -1.4197603991 | 0.000000000 |
+| boroughManhattan                              |  0.0063149166 | 0.934697252 |
+| boroughQueens                                 | -0.2337439883 | 0.062390602 |
+| boroughStaten Island                          | -2.9077449660 | 0.044424454 |
+| rental_price                                  | -0.0000035076 | 0.917536797 |
+| house_price                                   | -0.0000004249 | 0.008070334 |
+| boroughBrooklyn:rental_price                  |  0.0003818638 | 0.000000000 |
+| boroughManhattan:rental_price                 | -0.0000618627 | 0.071637366 |
+| boroughQueens:rental_price                    | -0.0000368845 | 0.488734039 |
+| boroughStaten Island:rental_price             |  0.0013601407 | 0.065178956 |
+| boroughBrooklyn:house_price                   |  0.0000011302 | 0.000000000 |
+| boroughManhattan:house_price                  |  0.0000002448 | 0.128552047 |
+| boroughQueens:house_price                     | -0.0000000407 | 0.838245302 |
+| boroughStaten Island:house_price              |  0.0000034063 | 0.123142293 |
+| rental_price:house_price                      | -0.0000000001 | 0.332989979 |
+| boroughBrooklyn:rental_price:house_price      | -0.0000000002 | 0.015165596 |
+| boroughManhattan:rental_price:house_price     |  0.0000000001 | 0.157520150 |
+| boroughQueens:rental_price:house_price        |  0.0000000002 | 0.013981259 |
+| boroughStaten Island:rental_price:house_price | -0.0000000017 | 0.116823631 |
+
+There are significant interactions between borough and rental price as
+well as borough and house price, particularly in Brooklyn and Queens.
+This indicates that the relationship between rental price, house price,
+and rodent activity varies across different boroughs.
+
+This model is considerably more complex, with numerous interaction
+terms. The results suggest that while borough remains a key factor in
+predicting rodent activity, the influence of rental and house prices
+varies by borough. However, many of the interaction effects are not
+statistically significant, implying that the added complexity may not be
+providing substantial predictive improvement.
+
+Therefore, we need to check further.
+
+## Comparison of income including models with and without interaction term:
+
+``` r
+cv2_df = 
+  crossv_mc(rodent_reg_merged, 100) 
+
+cv2_df |> 
+  mutate(
+    mod_1  = map(train, \(df) glm(formula = rodent_bi ~ borough + rental_price + house_price 
+                                  + borough*rental_price*house_price, data = rodent_reg_merged)),
+    mod_2  = map(train, \(df) glm(formula = rodent_bi ~ borough + rental_price + house_price, 
+                                  data = rodent_reg_merged))) |> 
+  mutate(
+    rmse_1 = map2_dbl(mod_1, test, \(mod, df) rmse(model = mod, data = df)),
+    rmse_2 = map2_dbl(mod_2, test, \(mod, df) rmse(model = mod, data = df))) |>
+  select(starts_with("rmse")) |>
+  pivot_longer(
+    everything(), 
+    names_to = "model", 
+    values_to = "rmse", 
+    names_prefix = "rmse_") |>
+  ggplot(aes(x = model, y = rmse, group = model, fill = model)) + 
+  geom_violin()
+```
+
+![](regression_models_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+
+The model with an interaction term between borough, rental price, and
+home value has a lower RMSE value than the model without an interaction
+term. Ultimately, the model with interaction terms appears to be the
+best model.
