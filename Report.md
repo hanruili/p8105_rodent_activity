@@ -196,9 +196,30 @@ regression models. The key questions were:
 - **Result:** The model with interaction terms had a lower RMSE than the
   model without, indicating improved predictive accuracy.
 
-## Discussion?????????
+## Discussion
 
-What were your findings? Are they what you expect? What insights into
-the data can you make?
+**Findings:** 
+Our findings reveal several key relationships between rodent activity, economic factors, and borough characteristics in New York City. Rental prices and house values were statistically significant predictors of rodent activity, though their individual effects were negligible. Borough emerged as the strongest predictor of rodent activity, with apparent differences in activity levels across boroughs. Furthermore, models incorporating interaction terms between borough and economic factors demonstrated that these relationships varied by location. Visualizations also highlighted a substantial spatial overlap between rodent activity hotspots and food scrap drop-off locations and a seasonal trend, with rodent activity peaking in July and August.
 
-## Limitations????????
+**Expectations:** 
+The findings align partially with expectations. Given the diverse socio-economic and environmental conditions across NYC neighbourhoods, the borough's role as a dominant predictor was anticipated. However, the negligible effects of rental price and house value were surprising, as we initially expected stronger associations due to the link between housing quality and pest control. The spatial overlap between rodent activity and waste disposal sites confirmed our hypothesis that waste management is critical in rodent behaviour. The seasonal peak in summer months was also consistent with known rodent behaviour patterns, which are influenced by warmer weather and increased food availability.
+
+**Insights:**
+
+1. Borough-Specific Policies: The significant differences in rodent activity by borough suggest that rodent control strategies should be tailored to local conditions. For instance, Staten Island has the lowest rodent activity, indicating that successful practices in this borough could be replicated in higher-activity areas like Manhattan and the Bronx.
+  
+2. Waste Management: The overlap between rodent activity and food scrap drop-off locations underscores the need to enhance waste management infrastructure in areas with high rodent activity. Introducing rodent-proof disposal bins and more frequent waste collection could mitigate the problem.
+	
+3. Seasonal Interventions: The summer peak in rodent activity highlights the need for targeted interventions during July and August, such as increased pest control efforts and public awareness campaigns.
+	
+4. Role of Housing Economics: While rental prices and house values have minor effects, their inclusion improves predictive accuracy, indicating that they still provide meaningful context when combined with other factors. This suggests that housing-related policies, such as improving housing quality in high-rodent-activity areas, could have a cumulative impact.
+
+## Limitations
+
+While rent and home value were statistically significant predictors, their effects were modest. This limitation suggests that other unmeasured factors (e.g., hygiene practices, building age, or neighbourhood density) may be more strongly associated with rodent activity. Future research should incorporate more detailed environmental and infrastructure data.
+
+Additionally, the data used for rent, home value, and rodent activity may need to be more consistent due to data collection methods. For example, rodent activity reports may be subject to reporting bias or delays, affecting the model's reliability.
+
+In addition, while interactions between borough and economic variables improved model fit, not all interaction effects were statistically significant. Adding interaction terms increases model complexity without consistently improving predictive value. Further refinement is needed to determine which interaction terms are most meaningful.
+
+The strong predictive power of borough as a variable suggests that it may capture unobserved factors, such as infrastructure quality or local waste management policies, rather than simply being a geographic identifier. Further research is needed to disentangle these effects.
