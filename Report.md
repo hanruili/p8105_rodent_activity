@@ -97,12 +97,84 @@ datasets.<br>
         - Merged socioeconomic data with rodent inspection data by ZIP
           code, borough, year and month.
 
-## Exploratory analysis ?????????
+## Exploratory analysis
 
 Visualizations, summaries, and exploratory statistical analyses. Justify
-the steps you took, and show any major changes to your ideas.
+the steps you took, and show any major changes to your ideas. \## Steps
+Taken
 
-## Statistical Analysis
+### Step 1: Temporal Analysis
+
+Objective: Identify patterns in rodent activity across months and years.
+Methodology: Aggregated rodent activity data by month and year. Created
+a line plot to visualize trends across five years (2020–2024).
+Justification: Temporal analysis allows for the identification of peak
+rodent activity periods, essential for targeting interventions. Seasonal
+trends (e.g., summer peaks) guided the focus on specific months like
+July for further analysis.
+
+### Step 2: Spatial Distribution of Food Scrap Sites
+
+Objective: Analyze the geographic availability of food scrap drop-off
+sites across boroughs. Methodology: Created a bar chart to summarize
+site counts by borough. Generated a scatter plot and map to visualize
+site clustering and distribution. Justification: Understanding site
+distribution is crucial to identifying potential inequities in access to
+food recycling programs. Highlighted boroughs with sparse coverage
+(e.g., Staten Island) to inform recommendations for program expansion.
+
+### Step 3: Interaction Analysis
+
+Objective: Explore the spatial relationship between rodent activity and
+food scrap drop-off sites. Methodology: Filtered rodent activity and
+food scrap data for July (a peak rodent activity month). Overlaid rodent
+activity hotspots and food scrap site locations on an interactive map.
+Justification: Examining the overlap between rodent activity and food
+scrap sites provided insights into potential causal relationships.
+Mapping data facilitated the identification of geographic areas
+requiring targeted waste management improvements.
+
+### Step 4: Equity Analysis
+
+Objective: Evaluate disparities in food scrap site distribution.
+Methodology: Aggregated food scrap site data by borough and identified
+underserved areas. Analyzed borough-level demographics and population
+density to contextualize disparities. Justification: Highlighting
+inequities is essential for recommending resource allocation to
+underserved areas. This step aligned with broader public health goals of
+ensuring equitable access to waste management programs.
+
+## 2. Major Changes to Ideas
+
+### Initial Assumptions:
+
+Rodent Activity is Uniform: Expected rodent activity to be evenly
+distributed across months and boroughs. Food Scrap Sites Have Minimal
+Impact: Assumed that proximity to food scrap drop-off sites had little
+to no influence on rodent activity. Focus on Citywide Analysis: Planned
+to treat NYC as a single unit of analysis without differentiating
+boroughs.
+
+### Evolved Insights:
+
+Seasonality is Key: Rodent activity is highly seasonal, peaking during
+warmer months. This realization shifted the focus to analyzing specific
+months like July. Spatial Interactions Exist: Significant overlap
+between rodent activity clusters and food scrap sites suggests a
+potential causal relationship. Equity Matters: Disparities in food scrap
+site distribution prompted a deeper analysis of borough-specific trends,
+particularly in underserved areas like Staten Island. Policy
+Implications: Initial focus was on identifying trends, but the findings
+necessitated actionable recommendations for waste management and rodent
+control.
+
+*The steps taken, including temporal and spatial analyses, evolved
+significantly as insights emerged. The analysis transitioned from a
+broad, exploratory approach to a focused, actionable framework
+addressing seasonal trends, spatial interactions, and equity concerns.
+These changes demonstrate the iterative nature of data analysis, where
+new findings guide refinements to initial ideas.* \## Statistical
+Analysis
 
 We analyzed the relationships between rodent activity and factors such
 as rental price, house value, and borough using logistic and linear
@@ -196,30 +268,9 @@ regression models. The key questions were:
 - **Result:** The model with interaction terms had a lower RMSE than the
   model without, indicating improved predictive accuracy.
 
-## Discussion
+## Discussion?????????
 
-**Findings:** 
-Our findings reveal several key relationships between rodent activity, economic factors, and borough characteristics in New York City. Rental prices and house values were statistically significant predictors of rodent activity, though their individual effects were negligible. Borough emerged as the strongest predictor of rodent activity, with apparent differences in activity levels across boroughs. Furthermore, models incorporating interaction terms between borough and economic factors demonstrated that these relationships varied by location. Visualizations also highlighted a substantial spatial overlap between rodent activity hotspots and food scrap drop-off locations and a seasonal trend, with rodent activity peaking in July and August.
+What were your findings? Are they what you expect? What insights into
+the data can you make?
 
-**Expectations:** 
-The findings align partially with expectations. Given the diverse socio-economic and environmental conditions across NYC neighbourhoods, the borough's role as a dominant predictor was anticipated. However, the negligible effects of rental price and house value were surprising, as we initially expected stronger associations due to the link between housing quality and pest control. The spatial overlap between rodent activity and waste disposal sites confirmed our hypothesis that waste management is critical in rodent behaviour. The seasonal peak in summer months was also consistent with known rodent behaviour patterns, which are influenced by warmer weather and increased food availability.
-
-**Insights:**
-
-1. Borough-Specific Policies: The significant differences in rodent activity by borough suggest that rodent control strategies should be tailored to local conditions. For instance, Staten Island has the lowest rodent activity, indicating that successful practices in this borough could be replicated in higher-activity areas like Manhattan and the Bronx.
-  
-2. Waste Management: The overlap between rodent activity and food scrap drop-off locations underscores the need to enhance waste management infrastructure in areas with high rodent activity. Introducing rodent-proof disposal bins and more frequent waste collection could mitigate the problem.
-	
-3. Seasonal Interventions: The summer peak in rodent activity highlights the need for targeted interventions during July and August, such as increased pest control efforts and public awareness campaigns.
-	
-4. Role of Housing Economics: While rental prices and house values have minor effects, their inclusion improves predictive accuracy, indicating that they still provide meaningful context when combined with other factors. This suggests that housing-related policies, such as improving housing quality in high-rodent-activity areas, could have a cumulative impact.
-
-## Limitations
-
-While rent and home value were statistically significant predictors, their effects were modest. This limitation suggests that other unmeasured factors (e.g., hygiene practices, building age, or neighbourhood density) may be more strongly associated with rodent activity. Future research should incorporate more detailed environmental and infrastructure data.
-
-Additionally, the data used for rent, home value, and rodent activity may need to be more consistent due to data collection methods. For example, rodent activity reports may be subject to reporting bias or delays, affecting the model's reliability.
-
-In addition, while interactions between borough and economic variables improved model fit, not all interaction effects were statistically significant. Adding interaction terms increases model complexity without consistently improving predictive value. Further refinement is needed to determine which interaction terms are most meaningful.
-
-The strong predictive power of borough as a variable suggests that it may capture unobserved factors, such as infrastructure quality or local waste management policies, rather than simply being a geographic identifier. Further research is needed to disentangle these effects.
+## Limitations????????

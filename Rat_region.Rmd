@@ -13,8 +13,9 @@ library(lubridate)
 library(tidyr)
 library(rvest)
 library(janitor)
+library(geosphere)
+library(sf)
 ```
-
 
 ```{r}
 # data import 
@@ -23,13 +24,81 @@ food_scrap_df =
   read.csv("data/food_scrap_drop_off.csv")
 zhvi_df = read.csv("data/ny_zhvi_df_2020_2024.csv")
 zori_df = read.csv("data/ny_zori_df_2020_2024.csv")
+nyc_boroughs = st_read("Borough Boundaries.geojson")
+
 
 head(rat_df)
 head(food_scrap_df)
 head(zhvi_df)
 head(zori_df)
+
 ```
 
+```{r}
+# Filter for rows where the result indicates rodent activity
+data_rodent <- rat_df %>% filter(grepl("Rat Activity", result, ignore.case = TRUE))
+
+# Group by neighborhood (NTA), year, and month to count occurrences of rodent activity
+rodent_activity_summary <- data_rodent %>% 
+  group_by(nta, year, month) %>% 
+  summarise(count = n(), .groups = 'drop') %>% 
+  arrange(desc(count))
+
+# Print the top neighborhoods with the highest rodent activity
+print(head(rodent_activity_summary))
+```
+
+```{r}
+# Filter data for the year 2020
+rodent_activity_2020 <- rodent_activity_summary %>% filter(year == 2020)
+
+# Create a bar plot for rodent activity in 2020
+ggplot(data = rodent_activity_2020, aes(x = month, y = count)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Rodent Activity in 2020",
+       x = "month",
+       y = "Rodent Activity Count") 
+```
+
+Purpose:
+
+The bar plot shows how rodent activity varies across months in 2020.
+This helps identify seasonal trends, such as higher rodent activity in summer months.
+Findings:
+
+There is a clear peak in rodent activity during the summer months (July and August).
+A significant drop in activity is observed in the spring (April).
+Justification:
+
+Understanding monthly trends in rodent activity can inform targeted pest control strategies during peak seasons.
+
+```{r}
+# Aggregate data by year and month
+yearly_monthly_summary <- data_rodent %>%
+  group_by(year, month) %>%
+  summarise(total_activity = n(), .groups = 'drop') %>%
+  arrange(year, month)
+
+# Create a line plot showing rodent activity over time
+ggplot(yearly_monthly_summary, aes(x = as.numeric(month), y = total_activity, color = as.factor(year), group = year)) +
+  geom_line(size = 1) +
+  geom_point() +
+  scale_x_continuous(breaks = 1:12) +
+  labs(title = "Monthly Rodent Activity by Year (2020-2024)",
+       x = "Month",
+       y = "Total Rodent Activity Reports",
+       color = "Year") +
+  theme_minimal() +
+  theme(legend.position = "right")
+```
+Objective:
+To identify patterns in rodent activity across months and years.
+To explore temporal trends and assess year-over-year consistency.
+
+Findings:
+Rodent activity generally peaks during the summer months (June to September), regardless of the year.
+In some years, there are anomalies (e.g., dips in October for 2024).
+A gradual increase in activity is evident over the years, suggesting either more rodents or improved reporting mechanisms.
 
 ```{r}
 # Analyze the distribution of food scrap drop-off sites by borough
@@ -53,6 +122,16 @@ ggplot(borough_distribution, aes(x = reorder(borough, -count), y = count)) +
        y = "Number of Sites") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
+Objective:
+Analyze the geographic distribution of food scrap drop-off sites across NYC boroughs.
+Identify whether disparities exist in access to food scrap sites between boroughs.
+
+Findings:
+Manhattan has the highest number of drop-off sites, followed by Brooklyn.
+Bronx, Queens, and Staten Island have significantly fewer sites.
+The disparity suggests possible inequities in access to food scrap recycling programs, particularly for Staten Island residents.
+
+
 ```{r}
 # Analyze the temporal patterns
 # First, let's create a simplified season categorization
@@ -82,23 +161,100 @@ ggplot(food_scrap_df, aes(x = longitude, y = latitude)) +
        y = "Latitude") +
   theme(legend.position = "right")
 ```
+Objective:
+To analyze the spatial distribution of food scrap drop-off sites across boroughs.
+To visualize clustering and disparities in drop-off site availability.
 
+Findings:
+Drop-off sites are densely clustered in Manhattan and Brooklyn.
+Sparse distribution in Staten Island reflects fewer food scrap programs in this borough.
+Queens and Bronx show moderate distribution but lack the density seen in Manhattan.
 ```{r}
-# Adjust the plot to make boroughs more prominent and counties less emphasized
-plot_county <- ggplot(zhvi_df, aes(x = county_name, fill = county_name)) +
+plot_county <- ggplot(zhvi_df, aes(x = CountyName, fill = CountyName)) +
   geom_bar() +
-  labs(title = "Demographic Differences by Borough", x = "Borough", y = "Count", fill = "Borough") +
+  labs(
+    title = "Demographic Differences by Borough",
+    x = "Borough",
+    y = "Count",
+    fill = "Borough"
+  ) +
   theme_minimal() +
-  theme(axis.text.x = element_text(size = 1),
-        plot.title = element_text(size = 14),
-        legend.title = element_text(size = 10),
-        legend.text = element_text(size = 8))
+  theme(
+    axis.text.x = element_text(size = 8, angle = 90, hjust = 1, vjust = 0.5),  # Rotate and resize x-axis text
+    plot.title = element_text(size = 16, face = "bold"),  # Enlarge title
+    axis.title.x = element_text(size = 14),  # Enlarge x-axis label
+    axis.title.y = element_text(size = 14),  # Enlarge y-axis label
+    legend.position = "none"  # Remove legend to reduce clutter
+  )
 
-# Display the updated plot
 print(plot_county)
+
 ```
+Objective:
+Analyze the geographic distribution of food scrap drop-off sites across NYC boroughs.
+Identify whether disparities exist in access to food scrap sites between boroughs.
+Findings:
+Manhattan has the highest number of drop-off sites, followed by Brooklyn.
+Bronx, Queens, and Staten Island have significantly fewer sites.
+The disparity suggests possible inequities in access to food scrap recycling programs, particularly for Staten Island residents.
 
 ```{r}
+# Filter rodent activity data for July
+rodent_july <- data_rodent %>% filter(month == 8)
 
+# Assuming food_scrap_df is available, filter it for July operations
+food_scrap_july <- food_scrap_df %>% filter(grepl("July", open_month, ignore.case = TRUE))
+
+# Create a scatter plot showing both rodent activity and food scrap sites in July
+ggplot() +
+  geom_point(data = rodent_july, aes(x = longitude, y = latitude, color = "Rodent Activity"), alpha = 0.6) +
+  geom_point(data = food_scrap_july, aes(x = longitude, y = latitude, color = "Food Scrap Sites"), alpha = 0.6) +
+  theme_minimal() +
+  labs(title = "Interaction of Rodent Activity and Food Scrap Sites in July",
+       x = "Longitude",
+       y = "Latitude",
+       color = "Legend") +
+  theme(legend.position = "right")
+
+# Load necessary libraries
+library(leaflet)
+
+# Filter rodent activity data for July
+rodent_july <- data_rodent %>% filter(month == 8)
+
+# Define NYC boroughs data (assuming nyc_boroughs is preloaded)
+# Colors for boroughs
+colors <- setNames(c("#FF0005", "#F0FDF0", "#5030FF", "#FFEF00", "#DF00F0"), unique(nyc_boroughs$boro_name))
+
+# Create the leaflet map
+rat_map <- leaflet() %>%
+  addProviderTiles(providers$OpenStreetMap, options = providerTileOptions(noWrap = TRUE)) %>%
+  setView(lng = -74.0060, lat = 40.7128, zoom = 11) %>%
+  addPolygons(data = nyc_boroughs,
+              fillColor = ~colors[as.character(nyc_boroughs$boro_name)],
+              fillOpacity = 0.5,
+              color = colors,
+              weight = 1,
+              popup = ~nyc_boroughs$boro_name) %>%
+  addCircleMarkers(data = rodent_july,
+                   lng = ~longitude, lat = ~latitude,
+                   radius = 3,
+                   color = "#00F0FF",
+                   fillOpacity = 0.5,
+                   popup = paste("<strong>Borough: </strong>", rodent_july$borough,
+                                 "<br><strong>Date: </strong>", format(as.Date(paste0(rodent_july$year, "-", rodent_july$month, "-01")), "%Y-%m")))
+
+# Print the map
+rat_map
 ```
+Objective:
+The map overlays rodent activity data and food scrap drop-off sites for July, a peak month for rodent activity. The visualization aims to understand the spatial relationship between these two factors.
 
+Clustered Rodent Activity:
+
+Rodent activity is heavily concentrated in high-density urban areas, particularly Manhattan and parts of Brooklyn.
+Sparse activity is observed in Staten Island, which aligns with its lower population density.
+Food Scrap Drop-off Sites:
+
+The distribution of food scrap sites shows a notable overlap with high rodent activity areas, particularly in Manhattan and Brooklyn.
+Staten Island has both fewer rodent activity reports and fewer food scrap sites, indicating potential inequity in access to waste management resources.
