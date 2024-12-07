@@ -1,7 +1,7 @@
 name: "rodent_analysis_website"
 title: "P8105 Rodent Activity Analysis"
 
-output_dir: "web"
+output_dir: "docs"
 
 # Apply a cleaner theme and floating table of contents
 output:
