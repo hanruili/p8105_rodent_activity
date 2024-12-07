@@ -17,6 +17,8 @@ navbar:
       href: index.html
     - text: "Report"
       href: Report.html
+    - text: "Data Cleaning"
+      href: data_clean.html
     - text: "Exploratory Data Analysis"
       href: Rat_region.html
     - text: "Data Analysis"

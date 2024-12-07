@@ -1,7 +1,9 @@
 ---
-title: "Data Analysis"
+title: "Exploratory Data Analysis"
 author: "Mingye Xie, Yujing Fu"
-output: html_document
+output: 
+  html_document:
+    code_folding: hide
 always_allow_html: true
 ---
 

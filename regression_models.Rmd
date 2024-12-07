@@ -1,5 +1,5 @@
 ---
-title: "Rodent Activity Regression Models"
+title: "Data Analysis:Rodent Activity Regression Models"
 author: "Yujing Fu, Hanrui Li"
 output: 
   html_document:
