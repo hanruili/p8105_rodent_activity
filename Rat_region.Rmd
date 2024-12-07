@@ -2,7 +2,8 @@
 title: "Data Analysis"
 author: "Mingye"
 date: "2024-12-03"
-output: github_document
+output: html_document
+always_allow_html: true
 ---
 
 ```{r setup, include=FALSE}
@@ -258,3 +259,8 @@ Food Scrap Drop-off Sites:
 
 The distribution of food scrap sites shows a notable overlap with high rodent activity areas, particularly in Manhattan and Brooklyn.
 Staten Island has both fewer rodent activity reports and fewer food scrap sites, indicating potential inequity in access to waste management resources.
+
+
+
+
+

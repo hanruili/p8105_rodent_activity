@@ -2,7 +2,7 @@
 title: "rat"
 author: "Hanrui Li"
 date: "2024-11-20"
-output: github_document
+output: html_document
 ---
 
 ```{r}
@@ -30,11 +30,11 @@ food = read.csv("data/food_scrap_drop_off.csv") |>
   janitor::clean_names()
 
 zhvi_df = 
-  read.csv("zhvi_df_2020_2024.csv") |>
+  read.csv("data/zhvi_df_2020_2024.csv") |>
   filter(state_name == "NY")
 
 zori_df = 
-  read.csv("zori_df_2020_2024.csv") |>
+  read.csv("data/zori_df_2020_2024.csv") |>
   filter(state_name == "NY")
 ```
 

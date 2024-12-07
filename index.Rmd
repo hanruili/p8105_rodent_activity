@@ -1,0 +1,25 @@
+---
+title: "index"
+author: "Zihan Zhao"
+date: "2024-12-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+---
+title: "P8105 Rodent Activity Analysis"
+output: html_document
+---
+
+# Welcome to the Rodent Activity Analysis Website
+
+This website provides a detailed analysis of rodent activity data in New York City (2020–2024). Below are the main sections of the website:
+
+- [Report](Report.html): Key findings and insights.
+- [Data Cleaning](data_clean.html): Steps taken to clean and preprocess the data.
+- [Rat Region Analysis](Rat_region.html): Spatial and temporal trends in rodent activity.
+- [Regression Models](regression_models.html): Statistical analysis of rodent activity.
+- [Shiny App](shiny_apps.html): Interactive tools to explore the data.

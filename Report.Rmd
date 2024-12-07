@@ -1,6 +1,6 @@
 ---
 title: "Report"
-output: github_document
+output: html_document
 ---
 
 ## Project Title
