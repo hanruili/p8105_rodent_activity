@@ -19,15 +19,14 @@ navbar:
     - text: "Report"
       href: Report.html
     - text: "Analysis"
-      menu:
-        - text: "Data Cleaning"
-          href: data_clean.html
-        - text: "Rat Region"
-          href: Rat_region.html
-        - text: "Regression Models"
-          href: regression_models.html
-        - text: "Shiny App"
-          href: https://mz3084.shinyapps.io/shiny_app_final
+    - text: "Data Cleaning"
+      href: data_clean.html
+    - text: "Data Analysis"
+      href: Rat_region.html
+    - text: "Regression Models"
+      href: regression_models.html
+    - text: "Shiny App"
+      href: https://mz3084.shinyapps.io/shiny_app_final
   right:
     - text: "My Team"
       href: Team.html
