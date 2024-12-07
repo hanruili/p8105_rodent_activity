@@ -1,33 +1,57 @@
 ---
-title: "data_clean"
+title: "Data Cleaning"
 author: "Meitong Zhou"
 date: "2024-12-04"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
 ---
 
-```{r}
+# **Data Cleaning**
+
+This page outlines the detailed steps taken to clean and preprocess datasets for analyzing rodent activity in New York City. The cleaned data serves as a foundation for exploratory analysis, statistical modeling, and visualization.
+
+---
+
+## **Food Scrap Drop-Off Data**
+
+### **Objective**
+- Standardize and clean food scrap drop-off location data for integration into spatial analyses.
+
+### **Steps**
+1. Read the dataset.
+2. Clean column names using `janitor::clean_names`.
+3. Save the cleaned dataset for further use.
+
+```{r food_scrap_cleaning, echo=FALSE, collapse=TRUE}
 library(tidyverse) 
 library(janitor)
-library(readr)
-library(rvest)
-```
-```{r}
+
 food_scrap_drop_off = read_csv(
   file = "Food_Scrap_Drop-Off_Locations_in_NYC_20241118.csv",
   na = c(".", "NA", "")
 ) |>
   clean_names()
-```
-```{r}
+
 write_csv(food_scrap_drop_off, "shiny app data/data/food_scrap_drop_off.csv")
 ```
 
+## **Rental Price Data (ZORI)**
 
+### **Objective**
+- Reshape and clean rental price data for integration with geographic data.
+
+### **Steps**
+1. Clean column names.
+2. Reshape the dataset into a long format.
+3. Add borough information by merging with zip code data.
 
 ```{r}
 zori_data = read.csv("Zip_zori_uc_sfrcondomfr_sm_month_NYC.csv") 
 zori_data = janitor::clean_names(zori_data) |>
-    pivot_longer(
+  pivot_longer(
     cols = starts_with("x20"),
     names_to = "date",
     values_to = "rental_price"
@@ -38,10 +62,7 @@ zip_code_data = read_html(url) |>
   html_table(fill = TRUE)
 zip_code_data = zip_code_data[[1]]
 zip_code_data = janitor::clean_names(zip_code_data)
-```
 
-
-```{r}
 zip_code_data = zip_code_data |>
   mutate(borough = case_when(
     county == "New York" ~ "Manhattan",
@@ -50,7 +71,18 @@ zip_code_data = zip_code_data |>
     county == "Bronx" ~ "Bronx",
     county == "Richmond" ~ "Staten Island"
   ))
+
 ```
+
+## **Merging Data**
+
+### **Objective**
+- Combine rental price data with borough and zip code information for comprehensive analysis.
+
+### **Steps**
+1. Rename variables for consistency.
+2. Merge datasets using the `merge()` function.
+3. Select relevant columns and save the cleaned dataset.
 
 ```{r}
 zori_data = zori_data |>

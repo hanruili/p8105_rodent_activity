@@ -1,5 +1,9 @@
 ---
-title: "regression_models"
+---
+title: "Regression Models: Explaining Rodent Activity"
+output: html_document
+---
+
 author: "Yujing Fu, Hanrui Li"
 date: "2024-11-30"
 output: html_document
