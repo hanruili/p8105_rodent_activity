@@ -16,16 +16,14 @@ navbar:
   left:
     - text: "Home"
       href: index.html
+    - text: "Report"
+      href: Report.html
     - text: "Analysis"
       menu:
-        - text: "Report"
-          href: Report.html
         - text: "Data Cleaning"
           href: data_clean.html
         - text: "Rat Region"
           href: Rat_region.html
-        - text: "Rat Activity"
-          href: rodent_activity.html
         - text: "Regression Models"
           href: regression_models.html
     - text: "Shiny App"
