@@ -13,7 +13,7 @@
 
 <meta name="date" content="2024-12-04" />
 
-<title>data_clean</title>
+<title>Data Cleaning</title>
 
 <script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -362,22 +362,40 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">data_clean</h1>
+<h1 class="title toc-ignore">Data Cleaning</h1>
 <h4 class="author">Meitong Zhou</h4>
 <h4 class="date">2024-12-04</h4>
 
 </div>
 
 
-<pre class="r"><code>library(tidyverse) 
-library(janitor)
-library(readr)
-library(rvest)</code></pre>
-<pre class="r"><code>food_scrap_drop_off = read_csv(
-  file = &quot;Food_Scrap_Drop-Off_Locations_in_NYC_20241118.csv&quot;,
-  na = c(&quot;.&quot;, &quot;NA&quot;, &quot;&quot;)
-) |&gt;
-  clean_names()</code></pre>
+<div id="data-cleaning" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> <strong>Data
+Cleaning</strong></h1>
+<p>This page outlines the detailed steps taken to clean and preprocess
+datasets for analyzing rodent activity in New York City. The cleaned
+data serves as a foundation for exploratory analysis, statistical
+modeling, and visualization.</p>
+<hr />
+<div id="food-scrap-drop-off-data" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> <strong>Food Scrap
+Drop-Off Data</strong></h2>
+<div id="objective" class="section level3" number="1.1.1">
+<h3><span class="header-section-number">1.1.1</span>
+<strong>Objective</strong></h3>
+<ul>
+<li>Standardize and clean food scrap drop-off location data for
+integration into spatial analyses.</li>
+</ul>
+</div>
+<div id="steps" class="section level3" number="1.1.2">
+<h3><span class="header-section-number">1.1.2</span>
+<strong>Steps</strong></h3>
+<ol style="list-style-type: decimal">
+<li>Read the dataset.</li>
+<li>Clean column names using <code>janitor::clean_names</code>.</li>
+<li>Save the cleaned dataset for further use.</li>
+</ol>
 <pre><code>## Rows: 591 Columns: 27
 ## ── Column specification ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
@@ -386,10 +404,30 @@ library(rvest)</code></pre>
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>write_csv(food_scrap_drop_off, &quot;shiny app data/data/food_scrap_drop_off.csv&quot;)</code></pre>
+</div>
+</div>
+<div id="rental-price-data-zori" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> <strong>Rental Price
+Data (ZORI)</strong></h2>
+<div id="objective-1" class="section level3" number="1.2.1">
+<h3><span class="header-section-number">1.2.1</span>
+<strong>Objective</strong></h3>
+<ul>
+<li>Reshape and clean rental price data for integration with geographic
+data.</li>
+</ul>
+</div>
+<div id="steps-1" class="section level3" number="1.2.2">
+<h3><span class="header-section-number">1.2.2</span>
+<strong>Steps</strong></h3>
+<ol style="list-style-type: decimal">
+<li>Clean column names.</li>
+<li>Reshape the dataset into a long format.</li>
+<li>Add borough information by merging with zip code data.</li>
+</ol>
 <pre class="r"><code>zori_data = read.csv(&quot;Zip_zori_uc_sfrcondomfr_sm_month_NYC.csv&quot;) 
 zori_data = janitor::clean_names(zori_data) |&gt;
-    pivot_longer(
+  pivot_longer(
     cols = starts_with(&quot;x20&quot;),
     names_to = &quot;date&quot;,
     values_to = &quot;rental_price&quot;
@@ -399,8 +437,9 @@ url = &quot;https://p8105.com/data/zip_codes.html&quot;
 zip_code_data = read_html(url) |&gt;
   html_table(fill = TRUE)
 zip_code_data = zip_code_data[[1]]
-zip_code_data = janitor::clean_names(zip_code_data)</code></pre>
-<pre class="r"><code>zip_code_data = zip_code_data |&gt;
+zip_code_data = janitor::clean_names(zip_code_data)
+
+zip_code_data = zip_code_data |&gt;
   mutate(borough = case_when(
     county == &quot;New York&quot; ~ &quot;Manhattan&quot;,
     county == &quot;Kings&quot; ~ &quot;Brooklyn&quot;,
@@ -408,6 +447,27 @@ zip_code_data = janitor::clean_names(zip_code_data)</code></pre>
     county == &quot;Bronx&quot; ~ &quot;Bronx&quot;,
     county == &quot;Richmond&quot; ~ &quot;Staten Island&quot;
   ))</code></pre>
+</div>
+</div>
+<div id="merging-data" class="section level2" number="1.3">
+<h2><span class="header-section-number">1.3</span> <strong>Merging
+Data</strong></h2>
+<div id="objective-2" class="section level3" number="1.3.1">
+<h3><span class="header-section-number">1.3.1</span>
+<strong>Objective</strong></h3>
+<ul>
+<li>Combine rental price data with borough and zip code information for
+comprehensive analysis.</li>
+</ul>
+</div>
+<div id="steps-2" class="section level3" number="1.3.2">
+<h3><span class="header-section-number">1.3.2</span>
+<strong>Steps</strong></h3>
+<ol style="list-style-type: decimal">
+<li>Rename variables for consistency.</li>
+<li>Merge datasets using the <code>merge()</code> function.</li>
+<li>Select relevant columns and save the cleaned dataset.</li>
+</ol>
 <pre class="r"><code>zori_data = zori_data |&gt;
   rename(zip_code = region_name)
 head(zori_data)</code></pre>
@@ -449,6 +509,9 @@ head(final_data)</code></pre>
 ## 5    10001 Manhattan     4033.221 Chelsea and Clinton x2015_05_31
 ## 6    10001 Manhattan     4070.808 Chelsea and Clinton x2015_06_30</code></pre>
 <pre class="r"><code>write.csv(final_data, file = &quot;shiny app data/data/final_data.csv&quot;, row.names = FALSE)</code></pre>
+</div>
+</div>
+</div>
 
 
 
