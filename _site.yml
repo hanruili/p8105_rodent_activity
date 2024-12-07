@@ -31,6 +31,8 @@ navbar:
   right:
     - text: "My Team"
       href: Team.html
+    - icon: fa-github
+      href: "https://github.com/hanruili/p8105_rodent_activity.git"
 
 # Footer reflecting collaborative team effort
 footer:
