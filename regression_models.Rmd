@@ -1,25 +1,43 @@
 ---
----
-title: "Regression Models: Explaining Rodent Activity"
-output: html_document
----
-
+title: "Rodent Activity Regression Models"
 author: "Yujing Fu, Hanrui Li"
-date: "2024-11-30"
-output: html_document
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
 ---
 
-```{r message=FALSE}
+```{r setup, include=FALSE}
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
+library(broom)
 library(lubridate)
 library(tidyr)
-library(rvest)
 library(janitor)
+library(flexdashboard)
+library(plotly)
 library(modelr)
+library(rvest)
 ```
 
+Column {data-width=350}
+-----------------------------------------------------------------------
+### Overview
+
+This page presents a comprehensive analysis of the relationship between rodent activity and housing metrics in New York City. The steps include:
+
+- **Data Cleaning and Preparation**
+- **Regression Analyses** for rental price, house value, and borough.
+- **Confounding and Interaction Effects** evaluation.
+- **Model Comparison and Evaluation**.
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Data Cleaning and Preparation
+
+#### Importing Datasets
 
 ```{r}
 # data import 
@@ -30,8 +48,9 @@ zhvi_df = read.csv("data/ny_zhvi_df_2020_2024.csv")
 zori_df = read.csv("data/ny_zori_df_2020_2024.csv")
 ```
 
+#### Cleaning Rat Inspection Data
 ```{r}
-# clean rat data
+# Cleaning the rat inspection dataset
 rat_tidydf = rat_df |> 
   mutate(inspection_date = substring(inspection_date, 1, 10)) |> 
   mutate(date = as.Date(inspection_date, format = "%m/%d/%Y")) |> 
@@ -41,8 +60,9 @@ rat_tidydf = rat_df |>
   select(inspection_type, result, date, year, month, day, street_name, zip_code, borough,latitude, longitude, location)
 ```
 
+#### Cleaning Housing Price Data (ZHVI and ZORI)
 ```{r}
-# clean zhvi and zori data
+# Clean ZHVI (house value) data
 zhvi_tidydf =
   zhvi_df |> 
   janitor::clean_names() |> 
@@ -76,8 +96,9 @@ zori_tidydf =
   drop_na() # Remove rows with missing values
 ```
 
+#### Combining and Merging Data
 ```{r}
-# zip code df
+# Import ZIP code metadata
 url = "https://p8105.com/data/zip_codes.html"
 zip_code_html = read_html(url)
 
