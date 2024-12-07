@@ -12,13 +12,11 @@ output:
     toc_depth: 2
 
 navbar:
-  title: "Rodent Analysis"
   left:
     - text: "Home"
       href: index.html
     - text: "Report"
       href: Report.html
-    - text: "Analysis"
     - text: "Data Cleaning"
       href: data_clean.html
     - text: "Data Analysis"
