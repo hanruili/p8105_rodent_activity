@@ -1,0 +1,47 @@
+---
+title: "My Team"
+output: html_document
+---
+
+# Meet My Team
+
+Here are the amazing members of my team:
+
+- **Hanrui Li**  
+  Email: [hl3859@cumc.columbia.edu](mailto:hl3859@cumc.columbia.edu)  
+  Program: MS Biostatistics
+
+- **Yujing Fu**  
+  Email: [yf2735@cumc.columbia.edu](mailto:yf2735@cumc.columbia.edu)  
+  Program: MS Biostatistics
+
+- **Meitong Zhou**  
+  Email: [mz3084@cumc.columbia.edu](mailto:mz3084@cumc.columbia.edu)  
+  Program: MS Biostatistics
+
+- **Mingye Xie**  
+  Email: [mx2286@cumc.columbia.edu](mailto:mx2286@cumc.columbia.edu)  
+  Program: MPH Environmental Health Sciences (EHS)
+
+- **Zihan Zhao**  
+  Email: [zz3166@cumc.columbia.edu](mailto:zz3166@cumc.columbia.edu)  
+  Program: MPH Epidemiology (EPI)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

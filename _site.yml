@@ -28,6 +28,9 @@ navbar:
           href: regression_models.html
     - text: "Shiny App"
       href: shiny_apps.html
+  right:
+    - text: "My Team"
+      href: Team.html
 
 # Footer reflecting collaborative team effort
 footer:
