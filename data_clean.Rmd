@@ -9,6 +9,13 @@ output:
     number_sections: true
 ---
 
+```{r}
+library(tidyverse)
+library(janitor)
+library(rvest)
+```
+
+
 # **Data Cleaning**
 
 This page outlines the detailed steps taken to clean and preprocess datasets for analyzing rodent activity in New York City. The cleaned data serves as a foundation for exploratory analysis, statistical modeling, and visualization.

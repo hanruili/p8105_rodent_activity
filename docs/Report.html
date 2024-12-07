@@ -33,6 +33,7 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
@@ -221,6 +222,9 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -327,13 +331,10 @@ div.tocify {
   <a href="Report.html">Report</a>
 </li>
 <li>
-  <a href="data_clean.html">Data Cleaning</a>
+  <a href="Rat_region.html">Exploratory Data Analysis</a>
 </li>
 <li>
-  <a href="Rat_region.html">Data Analysis</a>
-</li>
-<li>
-  <a href="regression_models.html">Regression Models</a>
+  <a href="regression_models.html">Data Analysis</a>
 </li>
 <li>
   <a href="https://mz3084.shinyapps.io/shiny_app_final">Shiny App</a>
@@ -356,6 +357,14 @@ div.tocify {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">Rodent Inspection Patterns in New York
@@ -365,7 +374,7 @@ City: A Data-Driven Analysis Using R</h1>
 
 
 <div id="motivation" class="section level1">
-<h1><strong>Motivation</strong></h1>
+<h1>Motivation</h1>
 <p>Rodents in urban areas like New York City pose serious public health
 risks, from spreading diseases and contaminating food supplies to
 causing infrastructure damage. Addressing rodent activity is crucial for
@@ -373,212 +382,221 @@ improving urban sanitation and residents’ quality of life. This report
 examines rodent inspection data, food scrap drop-off locations, and
 socioeconomic indicators to uncover the factors influencing rodent
 activity patterns.</p>
-<hr />
 </div>
 <div id="related-work" class="section level1">
-<h1><strong>Related Work</strong></h1>
-<p>Rodents have long been a public health concern in NYC, spreading
-diseases like: - <strong>Leptospirosis</strong> -
-<strong>Hantavirus</strong> - <strong>Food contamination and
-infrastructure damage</strong></p>
-<div id="key-studies" class="section level3">
-<h3>Key Studies</h3>
-<ul>
-<li><strong>Auerbach (2014)</strong> estimated NYC has 2 million
-rats.</li>
-<li><strong>Parsons et al. (2021)</strong> and <strong>Bedoya-Pérez et
-al. (2021)</strong> emphasized societal costs like food contamination,
-infrastructure damage, and economic losses.</li>
-</ul>
-<hr />
-</div>
+<h1>Related Work</h1>
+<p>Rodents have long been a public health concern in New York City,
+spreading diseases like leptospirosis and Hantavirus, and causing
+physical harm through bites (Brown &amp; Laco, 2015). Auerbach (2014)
+estimated that NYC is home to 2 million rats, while Parsons et
+al. (2021) and Bedoya-Pérez et al. (2021) highlighted the significant
+societal costs, including food contamination, infrastructure damage, and
+economic losses. Encountering rats is common for NYC residents, driving
+the need to understand rodent activity and its link to socioeconomic
+factors for better pest control strategies.</p>
 </div>
 <div id="research-questions" class="section level1">
-<h1><strong>Research Questions</strong></h1>
-<p>We focused on understanding the relationships between rodent activity
-and key influencing factors, such as <strong>temporal trends</strong>,
-<strong>geographic distribution</strong>, and <strong>socioeconomic
-conditions</strong>.</p>
+<h1>Research Questions</h1>
 <ol style="list-style-type: decimal">
-<li><strong>Temporal Trends in Rodent Activity</strong>
+<li><p><strong>Temporal Trends in Rodent Activity</strong><br />
+How does rodent activity vary across years and months?</p></li>
+<li><p><strong>Geographic Distribution</strong></p>
 <ul>
-<li>How does rodent activity vary across years and months?</li>
+<li>How is rodent activity distributed across different boroughs?<br />
+</li>
+<li>Which areas have the highest levels of rodent activity?<br />
+</li>
+<li>Does the distribution of rodent activity correlate with the location
+of food scrap drop-offs?</li>
 </ul></li>
-<li><strong>Geographic Distribution</strong>
+<li><p><strong>Socioeconomic Factors</strong><br />
+How are rental prices and house values related to rodent
+activity?</p></li>
+<li><p><strong>Regression Models to Explain Rodent Activity</strong></p>
 <ul>
-<li>How is rodent activity distributed across different boroughs?</li>
-<li>Are rodent hotspots correlated with food scrap drop-off sites?</li>
-</ul></li>
-<li><strong>Socioeconomic Factors</strong>
-<ul>
-<li>How are rental prices and house values related to rodent
-activity?</li>
-</ul></li>
-<li><strong>Predictive Models</strong>
-<ul>
-<li>What’s the best model to predict rodent activity using socioeconomic
-and geographic data?</li>
+<li>Does borough influence the relationship between socioeconomic
+factors and rodent activity?<br />
+</li>
+<li>Are there significant interactions between socioeconomic factors and
+rodent activity?<br />
+</li>
+<li>What is the best predictive model?</li>
 </ul></li>
 </ol>
-<hr />
 </div>
 <div id="data" class="section level1">
-<h1><strong>Data</strong></h1>
-<div id="data-sources" class="section level2">
-<h2><strong>Data Sources</strong></h2>
-<table>
-<colgroup>
-<col width="40%" />
-<col width="50%" />
-<col width="9%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Dataset</th>
-<th>Description</th>
-<th>Source</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Rodent Inspection Data</td>
-<td>Records of rodent activity in NYC</td>
-<td><a
-href="https://data.cityofnewyork.us/Health/Rodent-Inspection/p937-wjvj/about_data">NYC
-Open Data</a></td>
-</tr>
-<tr class="even">
-<td>Food Scrap Drop-Off Locations</td>
-<td>Locations for food recycling</td>
-<td><a
-href="https://data.cityofnewyork.us/Environment/Food-Scrap-Drop-Off-Locations-in-NYC/if26-z6xq/about_data">NYC
-Open Data</a></td>
-</tr>
-<tr class="odd">
-<td>Socioeconomic Data (ZORI, ZHVI)</td>
-<td>Rental prices and house values in NYC</td>
-<td><a href="https://www.zillow.com/research/data/">Zillow
-Research</a></td>
-</tr>
-</tbody>
-</table>
-<hr />
+<h1>Data</h1>
+<div id="data-sources-and-cleaning-methods" class="section level2">
+<h2>Data Sources and Cleaning Methods</h2>
+<div id="rodent-inspection-data-in-nyc" class="section level3">
+<h3>1. Rodent Inspection Data in NYC</h3>
+<ul>
+<li><strong>Data Source</strong>: <a
+href="https://data.cityofnewyork.us/Health/Rodent-Inspection/p937-wjvj/about_data">Rodent
+Inspection Data</a><br />
+</li>
+<li><strong>Cleaning Method</strong>:
+<ul>
+<li>Classified “Rat activity” as 1 and all other results as 0.<br />
+</li>
+<li>Extracted location (latitude, longitude, zip code, borough) and
+inspection dates for temporal and spatial analysis.</li>
+</ul></li>
+</ul>
+</div>
+<div id="food-scrap-drop-off-locations-in-nyc" class="section level3">
+<h3>2. Food Scrap Drop-Off Locations in NYC</h3>
+<ul>
+<li><strong>Data Source</strong>: <a
+href="https://data.cityofnewyork.us/Environment/Food-Scrap-Drop-Off-Locations-in-NYC/if26-z6xq/about_data">Food
+Scrap Drop-Off Locations</a><br />
+</li>
+<li><strong>Cleaning Method</strong>:
+<ul>
+<li>Extracted location (latitude, longitude, borough).</li>
+</ul></li>
+</ul>
+</div>
+<div id="socioeconomic-data" class="section level3">
+<h3>3. Socioeconomic Data</h3>
+<ul>
+<li><strong>Data Source</strong>: <a
+href="https://www.zillow.com/research/data/">Zillow Research Data</a>
+<ul>
+<li><strong>ZORI</strong>: Measures typical observed market rent across
+NYC.<br />
+</li>
+<li><strong>ZHVI</strong>: Reflects typical home values across
+regions.<br />
+</li>
+</ul></li>
+<li><strong>Cleaning Method</strong>:
+<ul>
+<li>Extracted rental (ZORI) and home value (ZHVI) data for NYC by ZIP
+code.<br />
+</li>
+<li>Merged socioeconomic data with rodent inspection data by ZIP code,
+borough, year, and month.</li>
+</ul></li>
+</ul>
+</div>
 </div>
 </div>
 <div id="exploratory-analysis" class="section level1">
-<h1><strong>Exploratory Analysis</strong></h1>
-<div id="key-steps" class="section level2">
-<h2><strong>Key Steps</strong></h2>
-<div id="temporal-trends" class="section level3">
-<h3>1. Temporal Trends</h3>
+<h1>Exploratory Analysis</h1>
+<p>Summaries, visualizations, and exploratory statistical analyses
+provided initial insights. Adjustments were made as needed based on the
+findings.</p>
+</div>
+<div id="statistical-analysis" class="section level1">
+<h1>Statistical Analysis</h1>
+<div id="rental-price-and-rodent-activity" class="section level2">
+<h2>1. Rental Price and Rodent Activity</h2>
 <ul>
-<li>Aggregated rodent activity data by <strong>month</strong> and
-<strong>year</strong>.</li>
-<li>Created <strong>line plots</strong> to visualize trends
-(2020–2024).</li>
+<li><strong>Model</strong>: Logistic regression of rodent activity on
+rental price.<br />
+</li>
+<li><strong>Result</strong>: Rental price has a statistically
+significant but negligible positive effect on rodent activity.</li>
 </ul>
 </div>
-<div id="geographic-distribution" class="section level3">
-<h3>2. Geographic Distribution</h3>
+<div id="house-value-and-rodent-activity" class="section level2">
+<h2>2. House Value and Rodent Activity</h2>
 <ul>
-<li>Mapped food scrap sites and rodent hotspots.</li>
-<li>Identified boroughs with the highest rodent activity.</li>
+<li><strong>Model</strong>: Logistic regression of rodent activity on
+house value.<br />
+</li>
+<li><strong>Result</strong>: House value has a statistically significant
+but negligible negative effect on rodent activity.</li>
 </ul>
 </div>
-<div id="interaction-analysis" class="section level3">
-<h3>3. Interaction Analysis</h3>
+<div id="borough-as-a-confounder" class="section level2">
+<h2>3. Borough as a Confounder</h2>
 <ul>
-<li>Analyzed overlap between rodent hotspots and food scrap sites.</li>
-<li>Generated interactive maps for July (peak rodent activity
-month).</li>
-</ul>
-<hr />
-</div>
-</div>
-</div>
-<div id="statistical-models" class="section level1">
-<h1><strong>Statistical Models</strong></h1>
-<div id="key-findings" class="section level3">
-<h3>Key Findings:</h3>
-<ol style="list-style-type: decimal">
-<li><p><strong>Rental Prices</strong>:<br />
-Minimal effect on rodent activity, but statistically significant. <span
-class="math display">\[\log\left[\frac{P(\text{rodent activity} = 1)}{1
-- P(\text{rodent activity} = 1)}\right] = -0.766 + 0.0000779 \times
-\text{rental price}\]</span></p></li>
-<li><p><strong>House Values</strong>:<br />
-Slightly negative effect on rodent activity. <span
-class="math display">\[\log\left[\frac{P(\text{rodent activity} = 1)}{1
-- P(\text{rodent activity} = 1)}\right] = -0.451 - 0.0000001 \times
-\text{house value}\]</span></p></li>
-<li><p><strong>Borough Effects</strong>:</p>
+<li><strong>3.1 Borough and Rental Price</strong>:
 <ul>
-<li>Borough remains the <strong>strongest predictor</strong> of rodent
-activity.</li>
-<li>Interaction terms improved model accuracy.</li>
+<li><strong>Model</strong>: Linear regression of rental price on
+borough.<br />
+</li>
+<li><strong>Result</strong>: Rental price varies significantly by
+borough, with higher prices in Manhattan and Brooklyn.</li>
 </ul></li>
-<li><p><strong>Cross-Validation</strong>:</p>
+<li><strong>3.2 Borough and Rodent Activity</strong>:
 <ul>
-<li>Adding borough-level interactions reduced model error and improved
-predictive power.</li>
-</ul></li>
-</ol>
-<hr />
-</div>
-</div>
-<div id="key-findings-1" class="section level1">
-<h1><strong>Key Findings</strong></h1>
-<div id="temporal-insights" class="section level3">
-<h3>Temporal Insights</h3>
-<ul>
-<li><strong>Summer peaks</strong> in rodent activity
-(June–September).</li>
-<li><strong>Winter drops</strong> likely due to cold weather.</li>
-</ul>
-</div>
-<div id="geographic-insights" class="section level3">
-<h3>Geographic Insights</h3>
-<ul>
-<li><strong>Manhattan and Brooklyn</strong> have the highest rodent
+<li><strong>Model</strong>: Logistic regression of rodent activity on
+borough.<br />
+</li>
+<li><strong>Result</strong>: Borough is significantly related to rodent
 activity.</li>
-<li><strong>Staten Island</strong> has the least activity, reflecting
-lower population density.</li>
+</ul></li>
 </ul>
 </div>
-<div id="policy-recommendations" class="section level3">
-<h3>Policy Recommendations</h3>
+<div id="interaction-term-of-rental-price-house-value-and-borough"
+class="section level2">
+<h2>4. Interaction Term of Rental Price, House Value, and Borough</h2>
+<ul>
+<li><strong>Result</strong>: Significant interactions exist between
+borough and rental price/house value, especially in Brooklyn and Queens.
+Interaction effects improve predictive accuracy but add complexity.</li>
+</ul>
+</div>
+</div>
+<div id="discussion" class="section level1">
+<h1>Discussion</h1>
+<div id="findings" class="section level2">
+<h2>Findings</h2>
 <ol style="list-style-type: decimal">
-<li><strong>Intensify Control in Summer</strong>:<br />
-Increase rodent control efforts during peak months.</li>
-<li><strong>Target High-Risk Boroughs</strong>:<br />
-Focus resources on boroughs with the highest activity.</li>
-<li><strong>Expand Food Scrap Programs</strong>:<br />
-Address inequities in food scrap site distribution (e.g., Staten
-Island).</li>
+<li>Rental prices and house values are statistically significant
+predictors of rodent activity but with negligible individual
+effects.<br />
+</li>
+<li>Borough is the strongest predictor of rodent activity, with
+differences across boroughs.<br />
+</li>
+<li>Models with interaction terms provide better predictive
+accuracy.<br />
+</li>
+<li>Spatial overlap exists between rodent activity hotspots and food
+scrap drop-off locations.</li>
 </ol>
-<hr />
+</div>
+<div id="insights" class="section level2">
+<h2>Insights</h2>
+<ul>
+<li><strong>Borough-Specific Policies</strong>: Tailor rodent control
+strategies to borough-specific conditions.<br />
+</li>
+<li><strong>Waste Management</strong>: Enhance infrastructure in
+high-activity areas.<br />
+</li>
+<li><strong>Seasonal Interventions</strong>: Focus efforts during peak
+summer months.<br />
+</li>
+<li><strong>Housing Economics</strong>: Improve housing quality in
+high-activity areas for long-term benefits.</li>
+</ul>
 </div>
 </div>
 <div id="limitations" class="section level1">
-<h1><strong>Limitations</strong></h1>
+<h1>Limitations</h1>
 <ol style="list-style-type: decimal">
-<li><strong>Data Completeness</strong>:<br />
-Rodent inspection data may not capture unreported activity.</li>
-<li><strong>Model Complexity</strong>:<br />
-Interaction terms are significant but difficult to interpret.</li>
-<li><strong>Generalizability</strong>:<br />
-Results are specific to NYC and may not apply to other cities.</li>
+<li>Modest effects of rent and home value suggest other unmeasured
+factors (e.g., hygiene, building age) are more strongly associated with
+rodent activity.<br />
+</li>
+<li>Data inconsistencies may affect reliability (e.g., reporting bias in
+rodent activity data).<br />
+</li>
+<li>Interaction effects increase model complexity without always
+improving predictive value.</li>
 </ol>
-<hr />
 </div>
-<div id="future-directions" class="section level1">
-<h1><strong>Future Directions</strong></h1>
-<ol style="list-style-type: decimal">
-<li>Include variables like restaurant density, trash schedules, and park
-proximity.</li>
-<li>Explore weekly or daily temporal trends.</li>
-<li>Collaborate with communities for actionable insights.</li>
-</ol>
+<div id="conclusion" class="section level1">
+<h1>Conclusion</h1>
+<p>Rodent activity in NYC is a multifaceted issue influenced by borough
+characteristics, socioeconomic factors, and waste management practices.
+Borough remains the strongest predictor, but incorporating housing
+economics provides additional context.</p>
 </div>
 
 
@@ -616,6 +634,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 <script>
 $(document).ready(function ()  {

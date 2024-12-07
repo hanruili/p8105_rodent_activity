@@ -17,11 +17,9 @@ navbar:
       href: index.html
     - text: "Report"
       href: Report.html
-    - text: "Data Cleaning"
-      href: data_clean.html
-    - text: "Data Analysis"
+    - text: "Exploratory Data Analysis"
       href: Rat_region.html
-    - text: "Regression Models"
+    - text: "Data Analysis"
       href: regression_models.html
     - text: "Shiny App"
       href: https://mz3084.shinyapps.io/shiny_app_final

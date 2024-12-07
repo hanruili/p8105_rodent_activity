@@ -41,6 +41,7 @@ food_scrap_df =
   read.csv("data/food_scrap_drop_off.csv")
 zhvi_df = read.csv("data/ny_zhvi_df_2020_2024.csv")
 zori_df = read.csv("data/ny_zori_df_2020_2024.csv")
+
 ```
 
 #### Cleaning Rat Inspection Data
@@ -112,24 +113,17 @@ zip_code_df =
   )) |> 
   select(zip_code, county, neighborhood, borough) |> 
   drop_na()
-```
 
-```{r}
 # merge the zori & zhvi with zip code based on both the `zip_code` and `county`
 zori_merged = left_join(zori_tidydf, zip_code_df, by = c("zip_code", "county")) |> 
   select(-date)
 zhvi_merged = left_join(zhvi_tidydf, zip_code_df, by = c("zip_code", "county")) |> 
   select(-date)
-```
 
-
-```{r}
 # merge the zillow information
 zillow_merged = merge(zori_merged, zhvi_merged, by = c("zip_code", "county", "borough", "neighborhood", "year", "month")) |> 
   drop_na()
-```
 
-```{r}
 # define the binary variable of rodent activity
 rodent_reg =
   rat_tidydf |> 
@@ -137,14 +131,10 @@ rodent_reg =
     result == "Rat Activity" ~ 1,
     TRUE ~ 0
   )) 
-```
 
-
-```{r}
 rodent_reg_merged = 
   left_join(zillow_merged, rodent_reg, by = c("zip_code", "borough", "year", "month"))
 ```
-
 
 # Data Analysis
 

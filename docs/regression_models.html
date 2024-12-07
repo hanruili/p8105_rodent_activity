@@ -332,13 +332,10 @@ div.tocify {
   <a href="Report.html">Report</a>
 </li>
 <li>
-  <a href="data_clean.html">Data Cleaning</a>
+  <a href="Rat_region.html">Exploratory Data Analysis</a>
 </li>
 <li>
-  <a href="Rat_region.html">Data Analysis</a>
-</li>
-<li>
-  <a href="regression_models.html">Regression Models</a>
+  <a href="regression_models.html">Data Analysis</a>
 </li>
 <li>
   <a href="https://mz3084.shinyapps.io/shiny_app_final">Shiny App</a>
@@ -469,23 +466,27 @@ zip_code_df =
     TRUE ~ &quot;Other&quot;
   )) |&gt; 
   select(zip_code, county, neighborhood, borough) |&gt; 
-  drop_na()</code></pre>
-<pre class="r"><code># merge the zori &amp; zhvi with zip code based on both the `zip_code` and `county`
+  drop_na()
+
+# merge the zori &amp; zhvi with zip code based on both the `zip_code` and `county`
 zori_merged = left_join(zori_tidydf, zip_code_df, by = c(&quot;zip_code&quot;, &quot;county&quot;)) |&gt; 
   select(-date)
 zhvi_merged = left_join(zhvi_tidydf, zip_code_df, by = c(&quot;zip_code&quot;, &quot;county&quot;)) |&gt; 
-  select(-date)</code></pre>
-<pre class="r"><code># merge the zillow information
+  select(-date)
+
+# merge the zillow information
 zillow_merged = merge(zori_merged, zhvi_merged, by = c(&quot;zip_code&quot;, &quot;county&quot;, &quot;borough&quot;, &quot;neighborhood&quot;, &quot;year&quot;, &quot;month&quot;)) |&gt; 
-  drop_na()</code></pre>
-<pre class="r"><code># define the binary variable of rodent activity
+  drop_na()
+
+# define the binary variable of rodent activity
 rodent_reg =
   rat_tidydf |&gt; 
   mutate(rodent_bi = case_when(
     result == &quot;Rat Activity&quot; ~ 1,
     TRUE ~ 0
-  )) </code></pre>
-<pre class="r"><code>rodent_reg_merged = 
+  )) 
+
+rodent_reg_merged = 
   left_join(zillow_merged, rodent_reg, by = c(&quot;zip_code&quot;, &quot;borough&quot;, &quot;year&quot;, &quot;month&quot;))</code></pre>
 </div>
 </div>
@@ -1201,7 +1202,7 @@ cv1_df |&gt;
   ggplot(aes(x = model, y = rmse, group = model, fill = model)) + 
   geom_violin(alpha = 0.5) +
   theme_minimal()</code></pre>
-<p><img src="regression_models_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p><img src="regression_models_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <p>The model excluding rental price and house value has a much higher
 root mean squared errors (RMSE) value than the model including rental
 price and house value. This means that the <strong>model including
@@ -1373,7 +1374,7 @@ cv2_df |&gt;
     names_prefix = &quot;rmse_&quot;) |&gt;
   ggplot(aes(x = model, y = rmse, group = model, fill = model)) + 
   geom_violin()</code></pre>
-<p><img src="regression_models_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p><img src="regression_models_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 <p>The model with an interaction term between borough, rental price, and
 home value has a lower RMSE value than the model without an interaction
 term. Ultimately, the model with interaction terms appears to be the
