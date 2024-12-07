@@ -26,8 +26,8 @@ navbar:
           href: Rat_region.html
         - text: "Regression Models"
           href: regression_models.html
-    - text: "Shiny App"
-      href: shiny_apps.html
+        - text: "Shiny App"
+          href: https://mz3084.shinyapps.io/shiny_app_final
   right:
     - text: "My Team"
       href: Team.html

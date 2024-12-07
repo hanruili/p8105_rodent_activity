@@ -1,7 +1,9 @@
 ---
 title: "Rodent Activity Regression Models"
 author: "Yujing Fu, Hanrui Li"
-output: html_document
+output: 
+  html_document:
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
@@ -18,8 +20,6 @@ library(modelr)
 library(rvest)
 ```
 
-Column {data-width=350}
------------------------------------------------------------------------
 ### Overview
 
 This page presents a comprehensive analysis of the relationship between rodent activity and housing metrics in New York City. The steps include:
@@ -29,8 +29,6 @@ This page presents a comprehensive analysis of the relationship between rodent a
 - **Confounding and Interaction Effects** evaluation.
 - **Model Comparison and Evaluation**.
 
-Column {data-width=650}
------------------------------------------------------------------------
 
 ### Data Cleaning and Preparation
 
