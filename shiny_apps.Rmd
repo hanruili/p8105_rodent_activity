@@ -4,7 +4,7 @@ output:
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
-    source: embed
+runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
@@ -20,7 +20,6 @@ library(shiny)
 library(leaflet)
 library(dplyr)
 library(sf)
-
 ```
 
 
@@ -214,5 +213,3 @@ df_server = function(input, output) {
 # Run the Shiny app
 shinyApp(ui = df_ui, server = df_server)
 ```
-
-
