@@ -183,8 +183,58 @@ We analyzed the relationships between rodent activity and factors such as rental
 ##### 4.2 Model Comparison with and Without Interaction Terms
 - **Result:** The model with interaction terms had a lower RMSE than the model without, indicating improved predictive accuracy.
 
-## Discussion?????????
-What were your findings? Are they what you expect? What insights into the data can you make?
+## Discussion
 
-## Limitations????????
+### Key Findings
+1. **Temporal Patterns**:  
+   Rodent activity peaks during warmer months (June–September), likely due to increased food availability and breeding activity. Winter months see a drop in activity due to harsher weather conditions. These findings align with existing literature on rodent behavior.
+
+2. **Geographic Insights**:  
+   Manhattan and Brooklyn show significantly higher rodent activity, likely due to higher population density and food availability. Staten Island's lower activity could be attributed to lower urban density and fewer food scrap drop-off sites.
+
+3. **Socioeconomic Impact**:  
+   Rental prices and house values were statistically significant predictors, but their effects on rodent activity were minimal. This suggests that socioeconomic factors alone do not strongly influence rodent activity. Borough remains a critical determinant, highlighting the importance of localized interventions.
+
+4. **Model Insights**:  
+   Adding borough-level interactions improved predictive accuracy, suggesting that rodent activity is not uniform across NYC. This finding emphasizes the importance of borough-specific strategies for pest control.
+
+### Implications for Policy
+1. **Seasonal Interventions**:  
+   Rodent control efforts should intensify during summer months to address peak activity.
+2. **Geographic Focus**:  
+   Resources should be allocated to boroughs like Manhattan and Brooklyn, where activity is highest.
+3. **Waste Management**:  
+   Expanding food scrap drop-off sites in underserved boroughs (e.g., Staten Island) could help reduce rodent activity.
+
+---
+
+#### **Limitations**
+```markdown
+## Limitations
+
+### Data Limitations
+1. **Incomplete Data**:  
+   - Rodent inspection data may not capture all rodent activity, as it only includes reported inspections.
+   - Socioeconomic data, such as rental prices and house values, may not fully represent local variability within ZIP codes.
+
+2. **Potential Bias**:  
+   - The focus on NYC datasets may limit the generalizability of findings to other urban areas.
+
+3. **Interaction Complexity**:  
+   - While borough-level interactions improved predictive models, interpreting these effects can be challenging due to overlapping socioeconomic and geographic factors.
+
+### Methodological Limitations
+1. **Temporal Coverage**:  
+   - Data was only available up to August 2024, limiting insights into longer-term trends.
+2. **Model Selection**:  
+   - While cross-validation was used, additional methods (e.g., AIC, BIC) could further validate model selection.
+
+### Future Directions
+1. **Include More Variables**:  
+   - Explore additional variables like restaurant density, trash collection schedules, and park proximity.
+2. **Dynamic Analysis**:  
+   - Investigate temporal changes in rodent activity at a more granular level (e.g., weekly or daily trends).
+3. **Community Engagement**:  
+   - Collaborate with NYC communities to validate findings and refine recommendations.
+
 

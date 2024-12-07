@@ -1,25 +1,34 @@
 ---
-title: "index"
-author: "Zihan Zhao"
-date: "2024-12-07"
-output: html_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
----
 title: "P8105 Rodent Activity Analysis"
 output: html_document
 ---
 
+![NYC Rodent Activity](data/Rodent in Subway.jpg) 
+
 # Welcome to the Rodent Activity Analysis Website
 
-This website provides a detailed analysis of rodent activity data in New York City (2020–2024). Below are the main sections of the website:
+Rodents are more than just a nuisance in urban areas—they are a major public health concern. This website is dedicated to analyzing rodent activity trends in New York City (2020–2024) using advanced statistical and geographic analysis.
 
-- [Report](Report.html): Key findings and insights.
-- [Data Cleaning](data_clean.html): Steps taken to clean and preprocess the data.
-- [Rat Region Analysis](Rat_region.html): Spatial and temporal trends in rodent activity.
-- [Regression Models](regression_models.html): Statistical analysis of rodent activity.
-- [Shiny App](shiny_apps.html): Interactive tools to explore the data.
+## Key Sections of the Website
+Explore the following sections to dive deeper into our findings:
+- [**Report**](Report.html): Key findings and insights from the analysis.
+- [**Data Cleaning**](data_clean.html): A step-by-step explanation of how we processed the data.
+- [**Rat Region Analysis**](Rat_region.html): Explore how rodent activity varies by geography and time.
+- [**Rat Activity**](rodent_activity.html): Detailed analysis of temporal trends in rodent activity.
+- [**Regression Models**](regression_models.html): Statistical models explaining rodent activity.
+- [**Shiny App**](shiny_apps.html): Interactive tools to explore rodent activity data.
+
+## Objectives of the Project
+1. **Understand Temporal Trends**: How rodent activity fluctuates across seasons and years.
+2. **Analyze Geographic Distribution**: Where rodent activity hotspots are in NYC and their correlation with food scrap drop-off sites.
+3. **Assess Socioeconomic Impact**: How factors like rental prices and house values influence rodent activity.
+4. **Build Predictive Models**: Use statistical tools to predict rodent activity based on temporal, geographic, and socioeconomic variables.
+
+## Key Findings
+- **Temporal Trends**: Rodent activity peaks in the summer months and decreases in the winter.
+- **Geographic Insights**: Manhattan and Brooklyn have the highest rodent activity, while Staten Island has the least.
+- **Socioeconomic Factors**: Rental prices and house values have a statistically significant but small impact on rodent activity.
+- **Predictive Models**: Borough-level data and interactions between socioeconomic factors improve model performance.
+
+## Meet the Team
+This project was developed by the **P8105 Team** as part of a collaborative effort to address urban health challenges in NYC. Our goal is to provide actionable insights that help improve public health strategies.

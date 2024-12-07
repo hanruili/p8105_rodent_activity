@@ -3,22 +3,35 @@ title: "P8105 Rodent Activity Analysis"
 
 output_dir: "web"
 
+# Apply a cleaner theme and floating table of contents
+output:
+  html_document:
+    theme: cosmo # Modern Bootstrap theme
+    toc: true
+    toc_float: true
+    toc_depth: 2
+
 navbar:
   title: "Rodent Analysis"
   left:
     - text: "Home"
       href: index.html
-    - text: "Report"
-      href: Report.html
-    - text: "Data Cleaning"
-      href: data_clean.html
-    - text: "Rat Region"
-      href: Rat_region.html
-    - text: "Rat Activity"
-      href: rodent_activity.html
-    - text: "Regression Models"
-      href: regression_models.html
+    - text: "Analysis"
+      menu:
+        - text: "Report"
+          href: Report.html
+        - text: "Data Cleaning"
+          href: data_clean.html
+        - text: "Rat Region"
+          href: Rat_region.html
+        - text: "Rat Activity"
+          href: rodent_activity.html
+        - text: "Regression Models"
+          href: regression_models.html
     - text: "Shiny App"
       href: shiny_apps.html
 
+# Footer reflecting collaborative team effort
+footer:
+  text: "© 2024 Rodent Analysis | Created by the P8105 Team"
 

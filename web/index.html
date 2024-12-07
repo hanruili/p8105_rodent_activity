@@ -9,16 +9,14 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Zihan Zhao" />
 
-<meta name="date" content="2024-12-07" />
 
 <title>P8105 Rodent Activity Analysis</title>
 
 <script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -31,6 +29,9 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -221,6 +222,69 @@ $(document).ready(function () {
 
 
 
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
 
 </head>
 
@@ -228,6 +292,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -247,20 +321,29 @@ $(document).ready(function () {
         <li>
   <a href="index.html">Home</a>
 </li>
-<li>
-  <a href="Report.html">Report</a>
-</li>
-<li>
-  <a href="data_clean.html">Data Cleaning</a>
-</li>
-<li>
-  <a href="Rat_region.html">Rat Region</a>
-</li>
-<li>
-  <a href="rodent_activity.html">Rat Activity</a>
-</li>
-<li>
-  <a href="regression_models.html">Regression Models</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="Report.html">Report</a>
+    </li>
+    <li>
+      <a href="data_clean.html">Data Cleaning</a>
+    </li>
+    <li>
+      <a href="Rat_region.html">Rat Region</a>
+    </li>
+    <li>
+      <a href="rodent_activity.html">Rat Activity</a>
+    </li>
+    <li>
+      <a href="regression_models.html">Regression Models</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="shiny_apps.html">Shiny App</a>
@@ -278,33 +361,79 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">P8105 Rodent Activity Analysis</h1>
-<h4 class="author">Zihan Zhao</h4>
-<h4 class="date">2024-12-07</h4>
 
 </div>
 
 
+<div class="float">
+<img src="data/Rodent%20in%20Subway.jpg" alt="NYC Rodent Activity" />
+<div class="figcaption">NYC Rodent Activity</div>
+</div>
 <div id="welcome-to-the-rodent-activity-analysis-website"
 class="section level1">
 <h1>Welcome to the Rodent Activity Analysis Website</h1>
-<p>This website provides a detailed analysis of rodent activity data in
-New York City (2020–2024). Below are the main sections of the
-website:</p>
+<p>Rodents are more than just a nuisance in urban areas—they are a major
+public health concern. This website is dedicated to analyzing rodent
+activity trends in New York City (2020–2024) using advanced statistical
+and geographic analysis.</p>
+<div id="key-sections-of-the-website" class="section level2">
+<h2>Key Sections of the Website</h2>
+<p>Explore the following sections to dive deeper into our findings: - <a
+href="Report.html"><strong>Report</strong></a>: Key findings and
+insights from the analysis. - <a href="data_clean.html"><strong>Data
+Cleaning</strong></a>: A step-by-step explanation of how we processed
+the data. - <a href="Rat_region.html"><strong>Rat Region
+Analysis</strong></a>: Explore how rodent activity varies by geography
+and time. - <a href="rodent_activity.html"><strong>Rat
+Activity</strong></a>: Detailed analysis of temporal trends in rodent
+activity. - <a href="regression_models.html"><strong>Regression
+Models</strong></a>: Statistical models explaining rodent activity. - <a
+href="shiny_apps.html"><strong>Shiny App</strong></a>: Interactive tools
+to explore rodent activity data.</p>
+</div>
+<div id="objectives-of-the-project" class="section level2">
+<h2>Objectives of the Project</h2>
+<ol style="list-style-type: decimal">
+<li><strong>Understand Temporal Trends</strong>: How rodent activity
+fluctuates across seasons and years.</li>
+<li><strong>Analyze Geographic Distribution</strong>: Where rodent
+activity hotspots are in NYC and their correlation with food scrap
+drop-off sites.</li>
+<li><strong>Assess Socioeconomic Impact</strong>: How factors like
+rental prices and house values influence rodent activity.</li>
+<li><strong>Build Predictive Models</strong>: Use statistical tools to
+predict rodent activity based on temporal, geographic, and socioeconomic
+variables.</li>
+</ol>
+</div>
+<div id="key-findings" class="section level2">
+<h2>Key Findings</h2>
 <ul>
-<li><a href="Report.html">Report</a>: Key findings and insights.</li>
-<li><a href="data_clean.html">Data Cleaning</a>: Steps taken to clean
-and preprocess the data.</li>
-<li><a href="Rat_region.html">Rat Region Analysis</a>: Spatial and
-temporal trends in rodent activity.</li>
-<li><a href="regression_models.html">Regression Models</a>: Statistical
-analysis of rodent activity.</li>
-<li><a href="shiny_apps.html">Shiny App</a>: Interactive tools to
-explore the data.</li>
+<li><strong>Temporal Trends</strong>: Rodent activity peaks in the
+summer months and decreases in the winter.</li>
+<li><strong>Geographic Insights</strong>: Manhattan and Brooklyn have
+the highest rodent activity, while Staten Island has the least.</li>
+<li><strong>Socioeconomic Factors</strong>: Rental prices and house
+values have a statistically significant but small impact on rodent
+activity.</li>
+<li><strong>Predictive Models</strong>: Borough-level data and
+interactions between socioeconomic factors improve model
+performance.</li>
 </ul>
+</div>
+<div id="meet-the-team" class="section level2">
+<h2>Meet the Team</h2>
+<p>This project was developed by the <strong>P8105 Team</strong> as part
+of a collaborative effort to address urban health challenges in NYC. Our
+goal is to provide actionable insights that help improve public health
+strategies.</p>
+</div>
 </div>
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -337,6 +466,35 @@ $(document).ready(function () {
 
 <!-- code folding -->
 
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

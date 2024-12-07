@@ -16,7 +16,7 @@
 <script src="site_libs/header-attrs-2.28/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -29,6 +29,9 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -219,6 +222,69 @@ $(document).ready(function () {
 
 
 
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
 
 </head>
 
@@ -226,6 +292,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -245,20 +321,29 @@ $(document).ready(function () {
         <li>
   <a href="index.html">Home</a>
 </li>
-<li>
-  <a href="Report.html">Report</a>
-</li>
-<li>
-  <a href="data_clean.html">Data Cleaning</a>
-</li>
-<li>
-  <a href="Rat_region.html">Rat Region</a>
-</li>
-<li>
-  <a href="rodent_activity.html">Rat Activity</a>
-</li>
-<li>
-  <a href="regression_models.html">Regression Models</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="Report.html">Report</a>
+    </li>
+    <li>
+      <a href="data_clean.html">Data Cleaning</a>
+    </li>
+    <li>
+      <a href="Rat_region.html">Rat Region</a>
+    </li>
+    <li>
+      <a href="rodent_activity.html">Rat Activity</a>
+    </li>
+    <li>
+      <a href="regression_models.html">Regression Models</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="shiny_apps.html">Shiny App</a>
@@ -635,16 +720,116 @@ accuracy.</li>
 </div>
 </div>
 <div id="discussion" class="section level2">
-<h2>Discussion?????????</h2>
-<p>What were your findings? Are they what you expect? What insights into
-the data can you make?</p>
+<h2>Discussion</h2>
+<div id="key-findings" class="section level3">
+<h3>Key Findings</h3>
+<ol style="list-style-type: decimal">
+<li><p><strong>Temporal Patterns</strong>:<br />
+Rodent activity peaks during warmer months (June–September), likely due
+to increased food availability and breeding activity. Winter months see
+a drop in activity due to harsher weather conditions. These findings
+align with existing literature on rodent behavior.</p></li>
+<li><p><strong>Geographic Insights</strong>:<br />
+Manhattan and Brooklyn show significantly higher rodent activity, likely
+due to higher population density and food availability. Staten Island’s
+lower activity could be attributed to lower urban density and fewer food
+scrap drop-off sites.</p></li>
+<li><p><strong>Socioeconomic Impact</strong>:<br />
+Rental prices and house values were statistically significant
+predictors, but their effects on rodent activity were minimal. This
+suggests that socioeconomic factors alone do not strongly influence
+rodent activity. Borough remains a critical determinant, highlighting
+the importance of localized interventions.</p></li>
+<li><p><strong>Model Insights</strong>:<br />
+Adding borough-level interactions improved predictive accuracy,
+suggesting that rodent activity is not uniform across NYC. This finding
+emphasizes the importance of borough-specific strategies for pest
+control.</p></li>
+</ol>
 </div>
-<div id="limitations" class="section level2">
-<h2>Limitations????????</h2>
+<div id="implications-for-policy" class="section level3">
+<h3>Implications for Policy</h3>
+<ol style="list-style-type: decimal">
+<li><strong>Seasonal Interventions</strong>:<br />
+Rodent control efforts should intensify during summer months to address
+peak activity.</li>
+<li><strong>Geographic Focus</strong>:<br />
+Resources should be allocated to boroughs like Manhattan and Brooklyn,
+where activity is highest.</li>
+<li><strong>Waste Management</strong>:<br />
+Expanding food scrap drop-off sites in underserved boroughs (e.g.,
+Staten Island) could help reduce rodent activity.</li>
+</ol>
+<hr />
+<div id="limitations" class="section level4">
+<h4><strong>Limitations</strong></h4>
+<p>```markdown ## Limitations</p>
+</div>
+</div>
+<div id="data-limitations" class="section level3">
+<h3>Data Limitations</h3>
+<ol style="list-style-type: decimal">
+<li><strong>Incomplete Data</strong>:
+<ul>
+<li>Rodent inspection data may not capture all rodent activity, as it
+only includes reported inspections.</li>
+<li>Socioeconomic data, such as rental prices and house values, may not
+fully represent local variability within ZIP codes.</li>
+</ul></li>
+<li><strong>Potential Bias</strong>:
+<ul>
+<li>The focus on NYC datasets may limit the generalizability of findings
+to other urban areas.</li>
+</ul></li>
+<li><strong>Interaction Complexity</strong>:
+<ul>
+<li>While borough-level interactions improved predictive models,
+interpreting these effects can be challenging due to overlapping
+socioeconomic and geographic factors.</li>
+</ul></li>
+</ol>
+</div>
+<div id="methodological-limitations" class="section level3">
+<h3>Methodological Limitations</h3>
+<ol style="list-style-type: decimal">
+<li><strong>Temporal Coverage</strong>:
+<ul>
+<li>Data was only available up to August 2024, limiting insights into
+longer-term trends.</li>
+</ul></li>
+<li><strong>Model Selection</strong>:
+<ul>
+<li>While cross-validation was used, additional methods (e.g., AIC, BIC)
+could further validate model selection.</li>
+</ul></li>
+</ol>
+</div>
+<div id="future-directions" class="section level3">
+<h3>Future Directions</h3>
+<ol style="list-style-type: decimal">
+<li><strong>Include More Variables</strong>:
+<ul>
+<li>Explore additional variables like restaurant density, trash
+collection schedules, and park proximity.</li>
+</ul></li>
+<li><strong>Dynamic Analysis</strong>:
+<ul>
+<li>Investigate temporal changes in rodent activity at a more granular
+level (e.g., weekly or daily trends).</li>
+</ul></li>
+<li><strong>Community Engagement</strong>:
+<ul>
+<li>Collaborate with NYC communities to validate findings and refine
+recommendations.</li>
+</ul></li>
+</ol>
+</div>
 </div>
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -677,6 +862,35 @@ $(document).ready(function () {
 
 <!-- code folding -->
 
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
