@@ -7,15 +7,19 @@ output:
     toc: true
     toc_float: true
     number_sections: true
+    code_folding: hide
 ---
 
-```{r}
+```{r, message = FALSE }
 library(tidyverse)
 library(janitor)
 library(rvest)
 
 knitr::opts_chunk$set(
-  warning = FALSE)
+  echo = FALSE,      # Hides the code
+  warning = FALSE,   # Suppresses warnings
+  message = FALSE    # Suppresses messages
+)
 ```
 
 
@@ -97,18 +101,15 @@ zip_code_data = zip_code_data |>
 ```{r}
 zori_data = zori_data |>
   rename(zip_code = region_name)
-head(zori_data)
 ```
 ```{r}
 merged_data = merge(zori_data, zip_code_data, by = "zip_code")
-head(merged_data) 
 ```
 ```{r}
 final_data = merged_data |>
   select(zip_code, borough, rental_price, neighborhood, date)
 final_data = final_data |> 
   filter(!is.na(rental_price))
-head(final_data)
 
 
 write.csv(final_data, file = "shiny app data/data/final_data.csv", row.names = FALSE)

@@ -44,7 +44,7 @@ Rodents are more than just a nuisance—they represent significant public health
 ---
 
 ## 👩‍💻 **Meet the Team**
-This project is the result of a collaborative effort by the Team. Our mission is to provide actionable insights that enhance urban health management strategies in New York City. We hope our work contributes to a cleaner, healthier NYC for all residents.
+This project is the result of a collaborative effort. Our mission is to provide actionable insights that enhance urban health management strategies in New York City. We hope our work contributes to a cleaner, healthier NYC for all residents.
 
 ---
 

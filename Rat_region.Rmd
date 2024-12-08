@@ -7,7 +7,7 @@ output:
 always_allow_html: true
 ---
 
-```{r setup}
+```{r setup, message = FALSE}
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
@@ -21,7 +21,10 @@ if (!requireNamespace("leaflet", quietly = TRUE)) install.packages("leaflet")
 library(leaflet)
 
 knitr::opts_chunk$set(
-  warning = FALSE)
+  echo = FALSE,      # Hides the code
+  warning = FALSE,   # Suppresses warnings
+  message = FALSE    # Suppresses messages
+)
 
 ```
 
@@ -35,6 +38,8 @@ zori_df = read.csv("data/ny_zori_df_2020_2024.csv")
 nyc_boroughs = st_read("Borough Boundaries.geojson")
 ```
 
+# Temporal patterns of rodent activity
+## Is rodent activity differs by Month? 
 ```{r}
 # Filter for rows where the result indicates rodent activity
 data_rodent <- rat_df %>% filter(grepl("Rat Activity", result, ignore.case = TRUE))
@@ -64,6 +69,7 @@ ggplot(data = rodent_activity_2020, aes(x = factor(month, levels = 1:12), y = co
 
 This bar plot shows how rodent activity varies across months in 2020. This helps us to identify seasonal trends, such as higher rodent activity in summer months. We found that there is a clear peak in rodent activity during the summer months (July and August). A significant drop in activity is observed in the spring (April). Understanding monthly trends in rodent activity can inform targeted pest control strategies during peak seasons.
 
+## How does rodent activity fluctuate monthly across the years?
 ```{r}
 # Aggregate data by year and month
 yearly_monthly_summary <- data_rodent %>%
@@ -87,6 +93,10 @@ ggplot(yearly_monthly_summary, aes(x = as.numeric(month), y = total_activity, co
 We further examined patterns in rodent activity across months and years and observed that activity generally peaks during the summer months (June to September), regardless of the year. However, some years show anomalies, such as a noticeable dip in October 2024.<br>
 <br>
 Interestingly, 2020 had the lowest rodent activity over the five-year period, likely due to the COVID-19 lockdown. In contrast, 2022 recorded the highest levels of activity.<br>
+
+# Geographical patterns of rodent activity
+## What are the distribution patterns of food scrap drop-off sites?
+### Distribution of food scrap drop-off sites by borough
 
 ```{r}
 # Analyze the distribution of food scrap drop-off sites by borough
@@ -115,7 +125,7 @@ After observing the temporal patterns of rodent activity, we aim to explore its 
 <br>
 Our findings indicate that Manhattan has the highest number of drop-off sites, with Brooklyn ranking second. In contrast, the Bronx, Queens, and Staten Island have a significantly lower number of sites. This disparity may indicate potential inequities in access to food scrap recycling programs, with Staten Island residents being particularly affected.
 
-
+### Distribution of food scrap drop-off sites on map
 ```{r}
 # Analyze the temporal patterns
 # First, let's create a simplified season categorization
@@ -157,6 +167,7 @@ leaflet() %>%
 
 Next, we visualized the clustering and disparities in the availability of drop-off sites. We found that drop-off sites are densely clustered in Manhattan and Brooklyn. The sparse distribution in Staten Island reflects a lower number of food scrap programs in this borough. Queens and the Bronx show a moderate distribution but lack the density observed in Manhattan.
 
+## Geographical distribution of rodent activity and its interaction with food scrap drop-off sites
 ```{r}
 plot_county <- ggplot(zhvi_df, aes(x = CountyName, fill = CountyName)) +
   geom_bar() +
