@@ -379,6 +379,14 @@ div.tocify {
 </div>
 
 
+<pre class="r"><code>library(tidyverse)
+library(janitor)
+library(rvest)
+
+knitr::opts_chunk$set(
+  warning = FALSE,   # Suppresses warnings
+  message = FALSE    # Suppresses messages
+)</code></pre>
 <div id="data-cleaning" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> <strong>Data
 Cleaning</strong></h1>
@@ -427,6 +435,28 @@ data.</li>
 <li>Reshape the dataset into a long format.</li>
 <li>Add borough information by merging with zip code data.</li>
 </ol>
+<pre class="r"><code>zori_data = read.csv(&quot;Zip_zori_uc_sfrcondomfr_sm_month_NYC.csv&quot;) 
+zori_data = janitor::clean_names(zori_data) |&gt;
+  pivot_longer(
+    cols = starts_with(&quot;x20&quot;),
+    names_to = &quot;date&quot;,
+    values_to = &quot;rental_price&quot;
+  )
+
+url = &quot;https://p8105.com/data/zip_codes.html&quot;
+zip_code_data = read_html(url) |&gt;
+  html_table(fill = TRUE)
+zip_code_data = zip_code_data[[1]]
+zip_code_data = janitor::clean_names(zip_code_data)
+
+zip_code_data = zip_code_data |&gt;
+  mutate(borough = case_when(
+    county == &quot;New York&quot; ~ &quot;Manhattan&quot;,
+    county == &quot;Kings&quot; ~ &quot;Brooklyn&quot;,
+    county == &quot;Queens&quot; ~ &quot;Queens&quot;,
+    county == &quot;Bronx&quot; ~ &quot;Bronx&quot;,
+    county == &quot;Richmond&quot; ~ &quot;Staten Island&quot;
+  ))</code></pre>
 </div>
 </div>
 <div id="merging-data" class="section level2" number="1.3">
@@ -448,6 +478,16 @@ comprehensive analysis.</li>
 <li>Merge datasets using the <code>merge()</code> function.</li>
 <li>Select relevant columns and save the cleaned dataset.</li>
 </ol>
+<pre class="r"><code>zori_data = zori_data |&gt;
+  rename(zip_code = region_name)</code></pre>
+<pre class="r"><code>merged_data = merge(zori_data, zip_code_data, by = &quot;zip_code&quot;)</code></pre>
+<pre class="r"><code>final_data = merged_data |&gt;
+  select(zip_code, borough, rental_price, neighborhood, date)
+final_data = final_data |&gt; 
+  filter(!is.na(rental_price))
+
+
+write.csv(final_data, file = &quot;shiny app data/data/final_data.csv&quot;, row.names = FALSE)</code></pre>
 </div>
 </div>
 </div>
