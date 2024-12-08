@@ -137,12 +137,18 @@ food_scrap_df <- food_scrap_df %>%
     )
   )
 
+# Define a color palette for boroughs
+pal <- colorFactor(
+  palette = c("red", "green", "blue", "orange", "purple"),
+  domain = food_scrap_df$borough
+)
+
 leaflet() %>%
   addTiles() %>%  # Add OpenStreetMap tiles
   addPolygons(
     data = nyc_boroughs,
     fillColor = "lightgray",
-    color = "black",
+    color = NA,
     weight = 1,
     opacity = 0.8,
     label = ~boro_name
@@ -150,7 +156,7 @@ leaflet() %>%
   addCircleMarkers(
     data = food_scrap_df,
     lng = ~longitude, lat = ~latitude,
-    color = ~factor(borough),
+    color = ~pal(borough),  # Use the color palette for boroughs
     popup = ~paste("Borough:", borough),
     radius = 4,
     fillOpacity = 0.7
@@ -161,7 +167,6 @@ leaflet() %>%
     labels = c("Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"),
     title = "Borough"
   )
-
 ```
 
 Next, we visualized the clustering and disparities in the availability of drop-off sites. We found that drop-off sites are densely clustered in Manhattan and Brooklyn. The sparse distribution in Staten Island reflects a lower number of food scrap programs in this borough. Queens and the Bronx show a moderate distribution but lack the density observed in Manhattan.
