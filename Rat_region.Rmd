@@ -7,7 +7,7 @@ output:
 always_allow_html: true
 ---
 
-```{r setup, include=FALSE}
+```{r setup}
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
@@ -17,9 +17,15 @@ library(rvest)
 library(janitor)
 library(geosphere)
 library(sf)
+if (!requireNamespace("leaflet", quietly = TRUE)) install.packages("leaflet")
+library(leaflet)
+
+knitr::opts_chunk$set(
+  include = FALSE)
+
 ```
 
-```{r}
+```{r, include=FALSE}
 # data import 
 rat_df = read.csv("data/rat_2020_2024.csv")
 food_scrap_df = 
@@ -122,22 +128,31 @@ food_scrap_df <- food_scrap_df %>%
     )
   )
 
-# Create a summary of operational patterns
-operation_summary <- food_scrap_df %>%
-  group_by(operation_type) %>%
-  summarise(count = n())
+leaflet() %>%
+  addTiles() %>%  # Add OpenStreetMap tiles
+  addPolygons(
+    data = nyc_boroughs,
+    fillColor = "lightgray",
+    color = "black",
+    weight = 1,
+    opacity = 0.8,
+    label = ~boro_name
+  ) %>%
+  addCircleMarkers(
+    data = food_scrap_df,
+    lng = ~longitude, lat = ~latitude,
+    color = ~factor(borough),
+    popup = ~paste("Borough:", borough),
+    radius = 4,
+    fillOpacity = 0.7
+  ) %>%
+  addLegend(
+    "bottomright",
+    colors = c("red", "green", "blue", "orange", "purple"),
+    labels = c("Bronx", "Brooklyn", "Manhattan", "Queens", "Staten Island"),
+    title = "Borough"
+  )
 
-print("Operation Pattern Summary:")
-print(operation_summary)
-
-# Create a scatter plot of locations
-ggplot(food_scrap_df, aes(x = longitude, y = latitude)) +
-  geom_point(aes(color = borough), alpha = 0.6) +
-  theme_minimal() +
-  labs(title = "Geographic Distribution of Food Scrap Drop-off Sites",
-       x = "Longitude",
-       y = "Latitude") +
-  theme(legend.position = "right")
 ```
 
 Next, we visualized the clustering and disparities in the availability of drop-off sites. We found that drop-off sites are densely clustered in Manhattan and Brooklyn. The sparse distribution in Staten Island reflects a lower number of food scrap programs in this borough. Queens and the Bronx show a moderate distribution but lack the density observed in Manhattan.
@@ -166,21 +181,6 @@ print(plot_county)
 
 Then we analyze the geographic distribution of food scrap drop-off sites across New York City's counties. The plot indicates that some boroughs, such as Suffolk County and Westchester County, have notably higher counts. In contrast, others, like Cortland County and Seneca County, exhibit minimal values.
 
-```{r}
-# Filter rodent activity data for August
-rodent_august <- data_rodent %>% filter(month == 8)
-
-# Create a scatter plot showing both rodent activity and food scrap sites in August
-ggplot() +
-  geom_point(data = rodent_august, aes(x = longitude, y = latitude, color = "Rodent Activity"), alpha = 0.6) +
-  geom_point(data = food_scrap_df, aes(x = longitude, y = latitude, color = "Food Scrap Sites"), alpha = 0.6) +
-  theme_minimal() +
-  labs(title = "Interaction of Rodent Activity and Food Scrap Sites in August",
-       x = "Longitude",
-       y = "Latitude",
-       color = "Legend") +
-  theme(legend.position = "right")
-```
 
 
 ```{r}
@@ -190,30 +190,43 @@ library(leaflet)
 # Filter rodent activity data for August
 rodent_august <- data_rodent %>% filter(month == 8)
 
-# Define NYC boroughs data (assuming nyc_boroughs is preloaded)
-# Colors for boroughs
-colors <- setNames(c("#FF0005", "#F0FDF0", "#5030FF", "#FFEF00", "#DF00F0"), unique(nyc_boroughs$boro_name))
+leaflet() %>%
+  addTiles() %>%  # Add OpenStreetMap tiles
+  # Add rodent activity points
+  addCircleMarkers(
+    data = rodent_august,
+    lng = ~longitude, lat = ~latitude,
+    fillColor = "red",  # Fill color for rodent activity
+    color = NA,  # No outline
+    popup = ~paste("Rodent Activity:", result),
+    radius = 4,
+    fillOpacity = 0.7,
+    group = "Rodent Activity"
+  ) %>%
+  # Add food scrap drop-off points
+  addCircleMarkers(
+    data = food_scrap_df,
+    lng = ~longitude, lat = ~latitude,
+    fillColor = "green",  # Fill color for food scrap sites
+    color = NA,  # No outline
+    popup = ~paste("Borough:", borough, "<br>Operation Type:", operation_type),
+    radius = 4,
+    fillOpacity = 0.7,
+    group = "Food Scrap Sites"
+  ) %>%
+  # Add a layer control
+  addLayersControl(
+    overlayGroups = c("Rodent Activity", "Food Scrap Sites"),
+    options = layersControlOptions(collapsed = FALSE)
+  ) %>%
+  # Add a legend
+  addLegend(
+    "bottomright",
+    colors = c("red", "green"),
+    labels = c("Rodent Activity", "Food Scrap Sites"),
+    title = "Legend"
+  )
 
-# Create the leaflet map
-rat_map <- leaflet() %>%
-  addProviderTiles(providers$OpenStreetMap, options = providerTileOptions(noWrap = TRUE)) %>%
-  setView(lng = -74.0060, lat = 40.7128, zoom = 11) %>%
-  addPolygons(data = nyc_boroughs,
-              fillColor = ~colors[as.character(nyc_boroughs$boro_name)],
-              fillOpacity = 0.3,
-              color = colors,
-              weight = 1,
-              popup = ~nyc_boroughs$boro_name) %>%
-  addCircleMarkers(data = rodent_august,
-                   lng = ~longitude, lat = ~latitude,
-                   radius = 3,
-                   color = "#00F0FF",
-                   fillOpacity = 0.5,
-                   popup = paste("<strong>Borough: </strong>", rodent_august$borough,
-                                 "<br><strong>Date: </strong>", format(as.Date(paste0(rodent_august$year, "-", rodent_august$month, "-01")), "%Y-%m")))
-
-# Print the map
-rat_map
 ```
 
 These two graphs overlay rodent activity data and food scrap drop-off sites for August, a peak month for rodent activity. The visualization aims to understand the spatial relationship between these two factors.<br>

@@ -18,6 +18,9 @@ library(flexdashboard)
 library(plotly)
 library(modelr)
 library(rvest)
+
+knitr::opts_chunk$set(
+  include = FALSE)
 ```
 
 ### Overview
