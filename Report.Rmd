@@ -56,9 +56,6 @@ Rodents have long been a public health concern in New York City, spreading disea
 
 # Exploratory Analysis
 
-Visualizations, summaries, and exploratory statistical analyses. Justify the steps you took, and show any major changes to your ideas.
-## Steps Taken
-
 ### Step 1: Temporal Analysis
 Objective: Identify patterns in rodent activity across months and years.
 Methodology:
