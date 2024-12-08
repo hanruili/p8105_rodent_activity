@@ -20,7 +20,7 @@ library(modelr)
 library(rvest)
 
 knitr::opts_chunk$set(
-  include = FALSE)
+ warning = FALSE)
 ```
 
 ### Overview

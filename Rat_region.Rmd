@@ -21,7 +21,7 @@ if (!requireNamespace("leaflet", quietly = TRUE)) install.packages("leaflet")
 library(leaflet)
 
 knitr::opts_chunk$set(
-  include = FALSE)
+  warning = FALSE)
 
 ```
 

@@ -15,7 +15,7 @@ library(janitor)
 library(rvest)
 
 knitr::opts_chunk$set(
-  include = FALSE)
+  warning = FALSE)
 ```
 
 
