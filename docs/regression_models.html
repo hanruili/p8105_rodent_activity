@@ -396,102 +396,16 @@ evaluation.</li>
 <h3>Data Cleaning and Preparation</h3>
 <div id="importing-datasets" class="section level4">
 <h4>Importing Datasets</h4>
-<pre class="r"><code># data import 
-rat_df = read.csv(&quot;data/rat_2020_2024.csv&quot;)
-food_scrap_df = 
-  read.csv(&quot;data/food_scrap_drop_off.csv&quot;)
-zhvi_df = read.csv(&quot;data/ny_zhvi_df_2020_2024.csv&quot;)
-zori_df = read.csv(&quot;data/ny_zori_df_2020_2024.csv&quot;)</code></pre>
 </div>
 <div id="cleaning-rat-inspection-data" class="section level4">
 <h4>Cleaning Rat Inspection Data</h4>
-<pre class="r"><code># Cleaning the rat inspection dataset
-rat_tidydf = rat_df |&gt; 
-  mutate(inspection_date = substring(inspection_date, 1, 10)) |&gt; 
-  mutate(date = as.Date(inspection_date, format = &quot;%m/%d/%Y&quot;)) |&gt; 
-  mutate(year = as.numeric(format(date, &quot;%Y&quot;))) |&gt; 
-  mutate(month = as.numeric(format(date, &quot;%m&quot;))) |&gt; 
-  mutate(day = as.numeric(format(date, &quot;%d&quot;))) |&gt; 
-  select(inspection_type, result, date, year, month, day, street_name, zip_code, borough,latitude, longitude, location)</code></pre>
 </div>
 <div id="cleaning-housing-price-data-zhvi-and-zori"
 class="section level4">
 <h4>Cleaning Housing Price Data (ZHVI and ZORI)</h4>
-<pre class="r"><code># Clean ZHVI (house value) data
-zhvi_tidydf =
-  zhvi_df |&gt; 
-  janitor::clean_names() |&gt; 
-  mutate(region_name=as.numeric(region_name)) |&gt; # Convert the data type to numeric
-  rename(zip_code = region_name, county = county_name) |&gt; # Rename &#39;region_name&#39; to &#39;zip_code&#39;
-  mutate(county = gsub(&quot; County&quot;, &quot;&quot;, county)) |&gt; 
-  pivot_longer(
-    cols = starts_with(&quot;x20&quot;), 
-    names_to = &quot;date&quot;, 
-    values_to = &quot;house_price&quot;) |&gt;  
-  mutate(date = as.Date(gsub(&quot;^x&quot;, &quot;&quot;, date), format = &quot;%Y_%m_%d&quot;)) |&gt; # Remove &#39;x&#39; from date and convert to Date format
-  mutate(year = as.numeric(format(date, &quot;%Y&quot;))) |&gt; # Extract the year from the date
-  mutate(month = as.numeric(format(date, &quot;%m&quot;))) |&gt; # Extract the month from the date
-  select(zip_code, county, date, year, month, house_price) |&gt; # Select relevant columns
-  drop_na() # Remove rows with missing values for data quality
-
-# Clean and transform ZORI (rental price) dataset
-zori_tidydf = 
-  zori_df |&gt; 
-  janitor::clean_names() |&gt; # Standardize column names to clearer version
-  rename(zip_code = region_name, county = county_name) |&gt; # Rename &#39;region_name&#39; to &#39;zip_code&#39;
-  mutate(county = gsub(&quot; County&quot;, &quot;&quot;, county)) |&gt; 
-  pivot_longer(
-    cols = starts_with(&quot;x20&quot;), 
-    names_to = &quot;date&quot;, 
-    values_to = &quot;rental_price&quot;) |&gt; 
-  mutate(date = as.Date(gsub(&quot;^x&quot;, &quot;&quot;, date), format = &quot;%Y_%m_%d&quot;)) |&gt; # Remove &#39;x&#39; from date and convert to Date format
-  mutate(year = as.numeric(format(date, &quot;%Y&quot;))) |&gt; 
-  mutate(month = as.numeric(format(date, &quot;%m&quot;))) |&gt;
-  select(zip_code, county, date, year, month, rental_price) |&gt; # Select necessary columns
-  drop_na() # Remove rows with missing values</code></pre>
 </div>
 <div id="combining-and-merging-data" class="section level4">
 <h4>Combining and Merging Data</h4>
-<pre class="r"><code># Import ZIP code metadata
-url = &quot;https://p8105.com/data/zip_codes.html&quot;
-zip_code_html = read_html(url)
-
-zip_code_df =
-  zip_code_html |&gt; 
-  html_table() |&gt; 
-  as.data.frame() |&gt; 
-  janitor::clean_names() |&gt; 
-  mutate(borough = case_when(
-    county == &quot;Bronx&quot; ~ &quot;Bronx&quot;,
-    county == &quot;Kings&quot; ~ &quot;Brooklyn&quot;,
-    county == &quot;New York&quot; ~ &quot;Manhattan&quot;,
-    county == &quot;Queens&quot; ~ &quot;Queens&quot;,
-    county == &quot;Richmond&quot; ~ &quot;Staten Island&quot;,
-    TRUE ~ &quot;Other&quot;
-  )) |&gt; 
-  select(zip_code, county, neighborhood, borough) |&gt; 
-  drop_na()
-
-# merge the zori &amp; zhvi with zip code based on both the `zip_code` and `county`
-zori_merged = left_join(zori_tidydf, zip_code_df, by = c(&quot;zip_code&quot;, &quot;county&quot;)) |&gt; 
-  select(-date)
-zhvi_merged = left_join(zhvi_tidydf, zip_code_df, by = c(&quot;zip_code&quot;, &quot;county&quot;)) |&gt; 
-  select(-date)
-
-# merge the zillow information
-zillow_merged = merge(zori_merged, zhvi_merged, by = c(&quot;zip_code&quot;, &quot;county&quot;, &quot;borough&quot;, &quot;neighborhood&quot;, &quot;year&quot;, &quot;month&quot;)) |&gt; 
-  drop_na()
-
-# define the binary variable of rodent activity
-rodent_reg =
-  rat_tidydf |&gt; 
-  mutate(rodent_bi = case_when(
-    result == &quot;Rat Activity&quot; ~ 1,
-    TRUE ~ 0
-  )) 
-
-rodent_reg_merged = 
-  left_join(zillow_merged, rodent_reg, by = c(&quot;zip_code&quot;, &quot;borough&quot;, &quot;year&quot;, &quot;month&quot;))</code></pre>
 </div>
 </div>
 <div id="data-analysis" class="section level1">
@@ -507,35 +421,6 @@ id="is-the-rental-price-of-houses-significantly-related-to-the-rodent-activity"
 class="section level2">
 <h2>Is the rental price of houses significantly related to the rodent
 activity?</h2>
-<pre class="r"><code># Logistic Regression: Rental Price vs Rodent Activity
-model1 &lt;- glm(rodent_bi ~ rental_price, family = binomial, data = rodent_reg_merged)
-
-# Creating Regression Model Table
-model1 |&gt;
-  broom::tidy() |&gt;
-  select(term, estimate, p.value) |&gt;
-  knitr::kable(digits = 10)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">p.value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">-0.7659535537</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="left">rental_price</td>
-<td align="right">0.0000779043</td>
-<td align="right">0</td>
-</tr>
-</tbody>
-</table>
 <p><span class="math display">\[log[\frac{P(\text{rodent activity} =
 1)}{1 - P(\text{rodent activity} = 1)}] = -0.766 + 0.0000779 \times
 \text{rental price}\]</span></p>
@@ -592,35 +477,6 @@ id="is-the-value-of-houses-significantly-related-to-the-rodent-activity"
 class="section level2">
 <h2>Is the value of houses significantly related to the rodent
 activity?</h2>
-<pre class="r"><code># Logistic Regression: House Value vs Rodent Activity
-model2 = glm(rodent_bi ~ house_price, family = binomial, data = rodent_reg_merged)
-
-# Creating Regression Model Table
-model2 |&gt;
-  broom::tidy() |&gt;
-  select(term, estimate, p.value) |&gt;
-  knitr::kable(digits = 10)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">p.value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">-0.4510699</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="left">house_price</td>
-<td align="right">-0.0000001</td>
-<td align="right">0</td>
-</tr>
-</tbody>
-</table>
 <p><span class="math display">\[log[\frac{P(\text{rodent activity} =
 1)}{1 - P(\text{rodent activity} = 1)}] = -0.451 + (-0.0000001) \times
 \text{house value}\]</span></p>
@@ -675,50 +531,6 @@ and rental price? (Also between rodent activity and house value?)</h2>
 <div id="is-borough-significantly-related-to-the-rental-price"
 class="section level3">
 <h3>Is borough significantly related to the rental price?</h3>
-<pre class="r"><code>#Linear regression model: rental price and borough
-model3 &lt;- lm(rental_price ~ borough, data = rodent_reg_merged)
-
-# Creating Regression Model Table
-model3 |&gt;
-  broom::tidy() |&gt;
-  select(term, estimate, p.value) |&gt;
-  knitr::kable(digits = 10)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">p.value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">2100.02902</td>
-<td align="right">0.0000000000</td>
-</tr>
-<tr class="even">
-<td align="left">boroughBrooklyn</td>
-<td align="right">805.84709</td>
-<td align="right">0.0000000000</td>
-</tr>
-<tr class="odd">
-<td align="left">boroughManhattan</td>
-<td align="right">1148.49080</td>
-<td align="right">0.0000000000</td>
-</tr>
-<tr class="even">
-<td align="left">boroughQueens</td>
-<td align="right">379.75174</td>
-<td align="right">0.0000000000</td>
-</tr>
-<tr class="odd">
-<td align="left">boroughStaten Island</td>
-<td align="right">45.97548</td>
-<td align="right">0.0002538912</td>
-</tr>
-</tbody>
-</table>
 <p><span class="math display">\[\text{rental price} = 2100.03 +
 805.85\times \text{Brooklyn} + 1148.49\times \text{Manhattan} +
 379.75\times \text{Queens} + 45.98\times \text{Staten Island}\]</span>
@@ -752,50 +564,6 @@ differences in average rental prices across boroughs.</p>
 <div id="is-borough-significantly-related-to-the-rodent-activity"
 class="section level3">
 <h3>Is borough significantly related to the rodent activity?</h3>
-<pre class="r"><code>#Regression model: rodent activity and borough
-model4 &lt;- glm(rodent_bi ~ borough, data = rodent_reg_merged)
-
-# Creating Regression Model Table
-model4 |&gt;
-  broom::tidy() |&gt;
-  select(term, estimate, p.value) |&gt;
-  knitr::kable(digits = 10)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">p.value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">0.44100985</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="left">boroughBrooklyn</td>
-<td align="right">-0.08470251</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="left">boroughManhattan</td>
-<td align="right">-0.03503736</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="left">boroughQueens</td>
-<td align="right">-0.16305830</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="left">boroughStaten Island</td>
-<td align="right">-0.34428366</td>
-<td align="right">0</td>
-</tr>
-</tbody>
-</table>
 <p><span class="math display">\[\text{rodent
 activity}=0.441+(−0.0847)\times \text{Brooklyn}+(−0.0350)\times
 \text{Manhattan}+(−0.1631)\text{Queens}+(−0.3443)\times
@@ -828,55 +596,6 @@ boroughs are statistically significant.</p>
 <div id="regression-model-with-both-borough-and-rental-price"
 class="section level3">
 <h3>Regression model with both borough and rental price</h3>
-<pre class="r"><code>#Regression model testing for confounding
-model5 &lt;- glm(rodent_bi ~ borough + rental_price, data = rodent_reg_merged)
-
-# Creating Regression Model Table
-model5 |&gt;
-  broom::tidy() |&gt;
-  select(term, estimate, p.value) |&gt;
-  knitr::kable(digits = 10)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">p.value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">0.4179050705</td>
-<td align="right">0.00e+00</td>
-</tr>
-<tr class="even">
-<td align="left">boroughBrooklyn</td>
-<td align="right">-0.0935738820</td>
-<td align="right">0.00e+00</td>
-</tr>
-<tr class="odd">
-<td align="left">boroughManhattan</td>
-<td align="right">-0.0476417252</td>
-<td align="right">0.00e+00</td>
-</tr>
-<tr class="even">
-<td align="left">boroughQueens</td>
-<td align="right">-0.1672550224</td>
-<td align="right">0.00e+00</td>
-</tr>
-<tr class="odd">
-<td align="left">boroughStaten Island</td>
-<td align="right">-0.3447959091</td>
-<td align="right">0.00e+00</td>
-</tr>
-<tr class="even">
-<td align="left">rental_price</td>
-<td align="right">0.0000110014</td>
-<td align="right">6.13e-08</td>
-</tr>
-</tbody>
-</table>
 <p><span class="math display">\[\text{rodent acticvity} =
 0.4179+(−0.0936)\times \text{Brooklyn}+(−0.0476)\times
 \text{Manhattan}+(−0.1673)\times \text{Queens}+(−0.3448)\times
@@ -914,50 +633,6 @@ is also a significant predictor.</p>
 <div id="is-borough-significantly-related-to-the-house-value"
 class="section level3">
 <h3>Is borough significantly related to the house value?</h3>
-<pre class="r"><code>#Linear regression model: house value and borough
-model6 &lt;- lm(house_price ~ borough, data = rodent_reg_merged)
-
-# Creating Regression Model Table
-model6 |&gt;
-  broom::tidy() |&gt;
-  select(term, estimate, p.value) |&gt;
-  knitr::kable(digits = 10)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">p.value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">434080.5</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="left">boroughBrooklyn</td>
-<td align="right">517358.1</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="left">boroughManhattan</td>
-<td align="right">759697.9</td>
-<td align="right">0</td>
-</tr>
-<tr class="even">
-<td align="left">boroughQueens</td>
-<td align="right">303134.7</td>
-<td align="right">0</td>
-</tr>
-<tr class="odd">
-<td align="left">boroughStaten Island</td>
-<td align="right">216711.8</td>
-<td align="right">0</td>
-</tr>
-</tbody>
-</table>
 <p><span class="math display">\[\text{house value} =
 434080.5+517358.1\times \text{Brooklyn}+759697.9\times
 \text{Manhattan}+303134.7\times \text{Queens}+216711.8\times
@@ -991,55 +666,6 @@ differences in property markets across New York City.</p>
 <div id="regression-model-with-both-borough-and-house-value"
 class="section level3">
 <h3>Regression model with both borough and house value</h3>
-<pre class="r"><code>#Regression model testing for confounding
-model7 &lt;- glm(rodent_bi ~ borough + house_price, data = rodent_reg_merged)
-
-# Creating Regression Model Table
-model7 |&gt;
-  broom::tidy() |&gt;
-  select(term, estimate, p.value) |&gt;
-  knitr::kable(digits = 10)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">p.value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">0.4625980364</td>
-<td align="right">0.0000000</td>
-</tr>
-<tr class="even">
-<td align="left">boroughBrooklyn</td>
-<td align="right">-0.0589711698</td>
-<td align="right">0.0000000</td>
-</tr>
-<tr class="odd">
-<td align="left">boroughManhattan</td>
-<td align="right">0.0027349667</td>
-<td align="right">0.5799593</td>
-</tr>
-<tr class="even">
-<td align="left">boroughQueens</td>
-<td align="right">-0.1479732293</td>
-<td align="right">0.0000000</td>
-</tr>
-<tr class="odd">
-<td align="left">boroughStaten Island</td>
-<td align="right">-0.3335062504</td>
-<td align="right">0.0000000</td>
-</tr>
-<tr class="even">
-<td align="left">house_price</td>
-<td align="right">-0.0000000497</td>
-<td align="right">0.0000000</td>
-</tr>
-</tbody>
-</table>
 <p><span class="math display">\[\text{rodent activity} =
 0.4626+(−0.0590)\times \text{Brooklyn}+(0.0027)\times
 \text{Manhattan}+(−0.1480)\times \text{Queens}+(−0.3335)\times
@@ -1080,60 +706,6 @@ price also has a statistically significant effect.</p>
 <div id="regression-model-with-borough-rental-price-and-house-value"
 class="section level3">
 <h3>Regression model with borough, rental price, and house value</h3>
-<pre class="r"><code>#Regression model testing for confounding
-model8 &lt;- glm(rodent_bi ~ borough + rental_price + house_price, data = rodent_reg_merged)
-
-# Creating Regression Model Table
-model8 |&gt;
-  broom::tidy() |&gt;
-  select(term, estimate, p.value) |&gt;
-  knitr::kable(digits = 10)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">p.value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">0.3864155486</td>
-<td align="right">0.000000000</td>
-</tr>
-<tr class="even">
-<td align="left">boroughBrooklyn</td>
-<td align="right">-0.0713618975</td>
-<td align="right">0.000000000</td>
-</tr>
-<tr class="odd">
-<td align="left">boroughManhattan</td>
-<td align="right">-0.0136966681</td>
-<td align="right">0.006363476</td>
-</tr>
-<tr class="even">
-<td align="left">boroughQueens</td>
-<td align="right">-0.1510194546</td>
-<td align="right">0.000000000</td>
-</tr>
-<tr class="odd">
-<td align="left">boroughStaten Island</td>
-<td align="right">-0.3252400123</td>
-<td align="right">0.000000000</td>
-</tr>
-<tr class="even">
-<td align="left">rental_price</td>
-<td align="right">0.0000462109</td>
-<td align="right">0.000000000</td>
-</tr>
-<tr class="odd">
-<td align="left">house_price</td>
-<td align="right">-0.0000000978</td>
-<td align="right">0.000000000</td>
-</tr>
-</tbody>
-</table>
 <p><span class="math display">\[\text{rodent activity} =
 0.3864+(−0.0714)\times \text{Brooklyn}+(−0.0137)\times
 \text{Manhattan}+(−0.1510)\times \text{Queens}+(−0.3252)\times
@@ -1186,27 +758,6 @@ id="comparison-of-models-with-or-without-rental-price-and-house-value"
 class="section level3">
 <h3>Comparison of models with or without rental price and house
 value</h3>
-<pre class="r"><code>cv1_df = 
-  crossv_mc(rodent_reg_merged, 100)
-
-cv1_df |&gt; 
-  mutate(
-    mod_1  = map(train, \(df) glm(rodent_bi ~ borough, data = rodent_reg_merged)),
-    mod_2  = map(train, \(df) glm(rodent_bi ~ borough + rental_price + house_price, 
-                                  data = rodent_reg_merged))) |&gt; 
-  mutate(
-    rmse_1 = map2_dbl(mod_1, test, \(mod, df) rmse(model = mod, data = df)),
-    rmse_2 = map2_dbl(mod_2, test, \(mod, df) rmse(model = mod, data = df))) |&gt;
-  select(starts_with(&quot;rmse&quot;)) |&gt;
-  pivot_longer(
-    everything(), 
-    names_to = &quot;model&quot;, 
-    values_to = &quot;rmse&quot;, 
-    names_prefix = &quot;rmse_&quot;) |&gt;
-  ggplot(aes(x = model, y = rmse, group = model, fill = model)) + 
-  geom_violin(alpha = 0.5) +
-  theme_minimal()</code></pre>
-<p><img src="regression_models_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <p>The model excluding rental price and house value has a much higher
 root mean squared errors (RMSE) value than the model including rental
 price and house value. This means that the <strong>model including
@@ -1218,131 +769,6 @@ id="testing-for-interaction-between-rental-price-house-value-and-borough"
 class="section level2">
 <h2>Testing for Interaction between rental price, house value, and
 borough</h2>
-<pre class="r"><code>#Regression model testing for confounding
-model9 = glm(formula = rodent_bi ~ borough + rental_price + house_price + 
-              borough*rental_price*house_price, data = rodent_reg_merged)
-
-# Creating Regression Model Table
-model9 |&gt;
-  broom::tidy() |&gt;
-  select(term, estimate, p.value) |&gt;
-  knitr::kable(digits = 10)</code></pre>
-<table style="width:100%;">
-<colgroup>
-<col width="63%" />
-<col width="19%" />
-<col width="16%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">p.value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">0.6955330911</td>
-<td align="right">0.000000000</td>
-</tr>
-<tr class="even">
-<td align="left">boroughBrooklyn</td>
-<td align="right">-1.4197603991</td>
-<td align="right">0.000000000</td>
-</tr>
-<tr class="odd">
-<td align="left">boroughManhattan</td>
-<td align="right">0.0063149166</td>
-<td align="right">0.934697252</td>
-</tr>
-<tr class="even">
-<td align="left">boroughQueens</td>
-<td align="right">-0.2337439883</td>
-<td align="right">0.062390602</td>
-</tr>
-<tr class="odd">
-<td align="left">boroughStaten Island</td>
-<td align="right">-2.9077449660</td>
-<td align="right">0.044424454</td>
-</tr>
-<tr class="even">
-<td align="left">rental_price</td>
-<td align="right">-0.0000035076</td>
-<td align="right">0.917536797</td>
-</tr>
-<tr class="odd">
-<td align="left">house_price</td>
-<td align="right">-0.0000004249</td>
-<td align="right">0.008070334</td>
-</tr>
-<tr class="even">
-<td align="left">boroughBrooklyn:rental_price</td>
-<td align="right">0.0003818638</td>
-<td align="right">0.000000000</td>
-</tr>
-<tr class="odd">
-<td align="left">boroughManhattan:rental_price</td>
-<td align="right">-0.0000618627</td>
-<td align="right">0.071637366</td>
-</tr>
-<tr class="even">
-<td align="left">boroughQueens:rental_price</td>
-<td align="right">-0.0000368845</td>
-<td align="right">0.488734039</td>
-</tr>
-<tr class="odd">
-<td align="left">boroughStaten Island:rental_price</td>
-<td align="right">0.0013601407</td>
-<td align="right">0.065178956</td>
-</tr>
-<tr class="even">
-<td align="left">boroughBrooklyn:house_price</td>
-<td align="right">0.0000011302</td>
-<td align="right">0.000000000</td>
-</tr>
-<tr class="odd">
-<td align="left">boroughManhattan:house_price</td>
-<td align="right">0.0000002448</td>
-<td align="right">0.128552047</td>
-</tr>
-<tr class="even">
-<td align="left">boroughQueens:house_price</td>
-<td align="right">-0.0000000407</td>
-<td align="right">0.838245302</td>
-</tr>
-<tr class="odd">
-<td align="left">boroughStaten Island:house_price</td>
-<td align="right">0.0000034063</td>
-<td align="right">0.123142293</td>
-</tr>
-<tr class="even">
-<td align="left">rental_price:house_price</td>
-<td align="right">-0.0000000001</td>
-<td align="right">0.332989979</td>
-</tr>
-<tr class="odd">
-<td align="left">boroughBrooklyn:rental_price:house_price</td>
-<td align="right">-0.0000000002</td>
-<td align="right">0.015165596</td>
-</tr>
-<tr class="even">
-<td align="left">boroughManhattan:rental_price:house_price</td>
-<td align="right">0.0000000001</td>
-<td align="right">0.157520150</td>
-</tr>
-<tr class="odd">
-<td align="left">boroughQueens:rental_price:house_price</td>
-<td align="right">0.0000000002</td>
-<td align="right">0.013981259</td>
-</tr>
-<tr class="even">
-<td align="left">boroughStaten Island:rental_price:house_price</td>
-<td align="right">-0.0000000017</td>
-<td align="right">0.116823631</td>
-</tr>
-</tbody>
-</table>
 <p>There are significant interactions between borough and rental price
 as well as borough and house price, particularly in Brooklyn and Queens.
 This indicates that the relationship between rental price, house price,
@@ -1358,27 +784,6 @@ providing substantial predictive improvement.</p>
 <div id="comparison-of-models-with-and-without-interaction-term"
 class="section level2">
 <h2>Comparison of models with and without interaction term:</h2>
-<pre class="r"><code>cv2_df = 
-  crossv_mc(rodent_reg_merged, 100) 
-
-cv2_df |&gt; 
-  mutate(
-    mod_1  = map(train, \(df) glm(formula = rodent_bi ~ borough + rental_price + house_price 
-                                  + borough*rental_price*house_price, data = rodent_reg_merged)),
-    mod_2  = map(train, \(df) glm(formula = rodent_bi ~ borough + rental_price + house_price, 
-                                  data = rodent_reg_merged))) |&gt; 
-  mutate(
-    rmse_1 = map2_dbl(mod_1, test, \(mod, df) rmse(model = mod, data = df)),
-    rmse_2 = map2_dbl(mod_2, test, \(mod, df) rmse(model = mod, data = df))) |&gt;
-  select(starts_with(&quot;rmse&quot;)) |&gt;
-  pivot_longer(
-    everything(), 
-    names_to = &quot;model&quot;, 
-    values_to = &quot;rmse&quot;, 
-    names_prefix = &quot;rmse_&quot;) |&gt;
-  ggplot(aes(x = model, y = rmse, group = model, fill = model)) + 
-  geom_violin()</code></pre>
-<p><img src="regression_models_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 <p>The model with an interaction term between borough, rental price, and
 home value has a lower RMSE value than the model without an interaction
 term. Ultimately, the model with interaction terms appears to be the
