@@ -54,62 +54,65 @@ Rodents have long been a public health concern in New York City, spreading disea
   - Extracted rental (ZORI) and home value (ZHVI) data for NYC by ZIP code.  
   - Merged socioeconomic data with rodent inspection data by ZIP code, borough, year, and month.
 
-# Exploratory Analysis
+## Exploratory Analysis 
 
 ### Step 1: Temporal Analysis
-Objective: Identify patterns in rodent activity across months and years.
-Methodology:
-Aggregated rodent activity data by month and year.
-Created a line plot to visualize trends across five years (2020–2024).
-Justification:
-Temporal analysis allows for the identification of peak rodent activity periods, essential for targeting interventions.
-Seasonal trends (e.g., summer peaks) guided the focus on specific months like July for further analysis.
+**Objective**: Identify patterns in rodent activity across months and years.  
+**Methodology**:  
+- Aggregated rodent activity data by month and year.  
+- Created a line plot to visualize trends across five years (2020–2024).  
+**Justification**:  
+- Temporal analysis allows for the identification of peak rodent activity periods, essential for targeting interventions.  
+- Seasonal trends (e.g., summer peaks) guided the focus on specific months like July for further analysis.
 
 ### Step 2: Spatial Distribution of Food Scrap Sites
-Objective: Analyze the geographic availability of food scrap drop-off sites across boroughs.
-Methodology:
-Created a bar chart to summarize site counts by borough.
-Generated a scatter plot and map to visualize site clustering and distribution.
-Justification:
-Understanding site distribution is crucial to identifying potential inequities in access to food recycling programs.
-Highlighted boroughs with sparse coverage (e.g., Staten Island) to inform recommendations for program expansion.
+**Objective**: Analyze the geographic availability of food scrap drop-off sites across boroughs.  
+**Methodology**:  
+- Created a bar chart to summarize site counts by borough.  
+- Generated a scatter plot and map to visualize site clustering and distribution.  
+**Justification**:  
+- Understanding site distribution is crucial to identifying potential inequities in access to food recycling programs.  
+- Highlighted boroughs with sparse coverage (e.g., Staten Island) to inform recommendations for program expansion.
 
 ### Step 3: Interaction Analysis
-Objective: Explore the spatial relationship between rodent activity and food scrap drop-off sites.
-Methodology:
-Filtered rodent activity and food scrap data for July (a peak rodent activity month).
-Overlaid rodent activity hotspots and food scrap site locations on an interactive map.
-Justification:
-Examining the overlap between rodent activity and food scrap sites provided insights into potential causal relationships.
-Mapping data facilitated the identification of geographic areas requiring targeted waste management improvements.
+**Objective**: Explore the spatial relationship between rodent activity and food scrap drop-off sites.  
+**Methodology**:  
+- Filtered rodent activity and food scrap data for July (a peak rodent activity month).  
+- Overlaid rodent activity hotspots and food scrap site locations on an interactive map.  
+**Justification**:  
+- Examining the overlap between rodent activity and food scrap sites provided insights into potential causal relationships.  
+- Mapping data facilitated the identification of geographic areas requiring targeted waste management improvements.
 
 ### Step 4: Equity Analysis
-Objective: Evaluate disparities in food scrap site distribution.
-Methodology:
-Aggregated food scrap site data by borough and identified underserved areas.
-Analyzed borough-level demographics and population density to contextualize disparities.
-Justification:
-Highlighting inequities is essential for recommending resource allocation to underserved areas.
-This step aligned with broader public health goals of ensuring equitable access to waste management programs.
+**Objective**: Evaluate disparities in food scrap site distribution.  
+**Methodology**:  
+- Aggregated food scrap site data by borough and identified underserved areas.  
+- Analyzed borough-level demographics and population density to contextualize disparities.  
+**Justification**:  
+- Highlighting inequities is essential for recommending resource allocation to underserved areas.  
+- This step aligned with broader public health goals of ensuring equitable access to waste management programs.
 
-## 2. Major Changes to Ideas
+---
 
-### Initial Assumptions:
-Rodent Activity is Uniform: Expected rodent activity to be evenly distributed across months and boroughs.
-Food Scrap Sites Have Minimal Impact: Assumed that proximity to food scrap drop-off sites had little to no influence on rodent activity.
-Focus on Citywide Analysis: Planned to treat NYC as a single unit of analysis without differentiating boroughs.
+### Major Changes to Ideas
 
-### Evolved Insights:
-Seasonality is Key:
-Rodent activity is highly seasonal, peaking during warmer months. This realization shifted the focus to analyzing specific months like July.
-Spatial Interactions Exist:
-Significant overlap between rodent activity clusters and food scrap sites suggests a potential causal relationship.
-Equity Matters:
-Disparities in food scrap site distribution prompted a deeper analysis of borough-specific trends, particularly in underserved areas like Staten Island.
-Policy Implications:
-Initial focus was on identifying trends, but the findings necessitated actionable recommendations for waste management and rodent control.
+#### Initial Assumptions:
+1. **Rodent Activity is Uniform**: Expected rodent activity to be evenly distributed across months and boroughs.  
+2. **Food Scrap Sites Have Minimal Impact**: Assumed that proximity to food scrap drop-off sites had little to no influence on rodent activity.  
+3. **Focus on Citywide Analysis**: Planned to treat NYC as a single unit of analysis without differentiating boroughs.
 
-*The steps taken, including temporal and spatial analyses, evolved significantly as insights emerged. The analysis transitioned from a broad, exploratory approach to a focused, actionable framework addressing seasonal trends, spatial interactions, and equity concerns. These changes demonstrate the iterative nature of data analysis, where new findings guide refinements to initial ideas.*
+#### Evolved Insights:
+1. **Seasonality is Key**:  
+   - Rodent activity is highly seasonal, peaking during warmer months.  
+   - This realization shifted the focus to analyzing specific months like July.  
+2. **Spatial Interactions Exist**:  
+   - Significant overlap between rodent activity clusters and food scrap sites suggests a potential causal relationship.  
+3. **Equity Matters**:  
+   - Disparities in food scrap site distribution prompted a deeper analysis of borough-specific trends, particularly in underserved areas like Staten Island.  
+4. **Policy Implications**:  
+   - Initial focus was on identifying trends, but the findings necessitated actionable recommendations for waste management and rodent control.
+
+The steps taken, including temporal and spatial analyses, evolved significantly as insights emerged. The analysis transitioned from a broad, exploratory approach to a focused, actionable framework addressing seasonal trends, spatial interactions, and equity concerns. These changes demonstrate the iterative nature of data analysis, where new findings guide refinements to initial ideas.
 
 # Statistical Analysis
 
